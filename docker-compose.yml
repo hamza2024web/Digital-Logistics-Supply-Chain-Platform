@@ -5,7 +5,7 @@ services:
     image: postgres:15
     container_name: postgres-db
     environment:
-      POSTGRES_DB: springdb
+      POSTGRES_DB: logistdb
       POSTGRES_USER: springuser
       POSTGRES_PASSWORD: springpass
     ports:
