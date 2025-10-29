@@ -12,29 +12,40 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U springuser -d logistdb"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   app:
     build: .
     container_name: spring-app
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/springdb
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/logistdb
       SPRING_DATASOURCE_USERNAME: springuser
       SPRING_DATASOURCE_PASSWORD: springpass
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+      SPRING_JPA_SHOW_SQL: true
     restart: unless-stopped
 
   pgadmin:
     image: dpage/pgadmin4
+    container_name: pgadmin
     restart: always
     ports:
       - "8082:80"
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@example.com
-      PGADMIN_DEFAULT_PASSWORD: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
     depends_on:
       - db
 
