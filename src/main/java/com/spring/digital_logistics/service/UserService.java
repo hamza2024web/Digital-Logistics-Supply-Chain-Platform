@@ -3,6 +3,7 @@ package com.spring.digital_logistics.service;
 import com.spring.digital_logistics.dto.UserCreateDTO;
 import com.spring.digital_logistics.dto.UserDTO;
 import com.spring.digital_logistics.entity.User;
+import com.spring.digital_logistics.exception.UserNotFoundException;
 import com.spring.digital_logistics.mapper.UserMapper;
 import com.spring.digital_logistics.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -31,7 +32,8 @@ public class UserService {
     }
 
     public Optional<UserDTO> getUserByEmail(String email){
-        return userRepository.findByEmail(email).map(userMapper::toUserDTO);
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("Utilisateur non trouvé avec l'email : " + email));
+        return Optional.of(userMapper.toUserDTO(user));
     }
 
 
