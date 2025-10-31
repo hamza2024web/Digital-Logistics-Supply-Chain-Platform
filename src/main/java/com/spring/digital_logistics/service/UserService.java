@@ -1,5 +1,6 @@
 package com.spring.digital_logistics.service;
 
+import com.spring.digital_logistics.dto.request.LoginDTO;
 import com.spring.digital_logistics.dto.request.UserCreateDTO;
 import com.spring.digital_logistics.dto.response.UserDTO;
 import com.spring.digital_logistics.entity.User;
@@ -10,6 +11,7 @@ import com.spring.digital_logistics.mapper.UserMapper;
 import com.spring.digital_logistics.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -47,6 +49,16 @@ public class UserService {
         User savedUser = userRepository.save(user);
 
         return userMapper.toUserDTO(savedUser);
+    }
+
+    public UserDTO login(LoginDTO loginDTO){
+        User user = userRepository.findByEmail(loginDTO.getEmail()).orElseThrow(() -> new UserNotFoundException("Utilisateur non trouvé"));
+
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        if (!encoder.matches(loginDTO.getPassword(), user.getPassword())){
+            throw new BadCredentialsException("Mot De Passe incorrect");
+        }
+        return userMapper.toUserDTO(user);
     }
 
     public Optional<UserDTO> getUserByEmail(String email){
