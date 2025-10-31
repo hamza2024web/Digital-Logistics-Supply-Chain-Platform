@@ -17,6 +17,12 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
+                        .requestMatchers(
+                                "/api/admin/**"
+                        ).hasRole("ADMIN")
+                        .requestMatchers(
+                                "/api/warehouse/**"
+                        ).hasRole("WAREHOUSE_MANAGER")
                         .anyRequest().authenticated()
                 ).formLogin(form -> form.disable());
         return http.build();
