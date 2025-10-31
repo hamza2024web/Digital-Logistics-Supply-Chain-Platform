@@ -1,7 +1,7 @@
 package com.spring.digital_logistics.controller;
 
-import com.spring.digital_logistics.dto.UserCreateDTO;
-import com.spring.digital_logistics.dto.UserDTO;
+import com.spring.digital_logistics.dto.request.UserCreateDTO;
+import com.spring.digital_logistics.dto.response.UserDTO;
 import com.spring.digital_logistics.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +20,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<UserDTO> register(@RequestBody UserCreateDTO userCreateDTO){
-        UserDTO createUser = userService.createUser(userCreateDTO);
+        UserDTO createUser = userService.register(userCreateDTO);
         return ResponseEntity.ok(createUser);
     }
 }

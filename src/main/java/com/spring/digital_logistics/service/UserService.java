@@ -1,8 +1,9 @@
 package com.spring.digital_logistics.service;
 
-import com.spring.digital_logistics.dto.UserCreateDTO;
-import com.spring.digital_logistics.dto.UserDTO;
+import com.spring.digital_logistics.dto.request.UserCreateDTO;
+import com.spring.digital_logistics.dto.response.UserDTO;
 import com.spring.digital_logistics.entity.User;
+import com.spring.digital_logistics.entity.enums.Role;
 import com.spring.digital_logistics.exception.EmailAlreadyUsedException;
 import com.spring.digital_logistics.exception.UserNotFoundException;
 import com.spring.digital_logistics.mapper.UserMapper;
@@ -33,6 +34,19 @@ public class UserService {
         if (userRepository.findByEmail(userCreateDTO.getEmail()).isPresent()){
             throw new EmailAlreadyUsedException("Cet email est déjà utilisé !");
         }
+
+        User user = userMapper.toUser(userCreateDTO);
+
+        String hashedPassword = passwordEncoder.encode(userCreateDTO.getPassword());
+        user.setPassword(hashedPassword);
+
+        user.setRole(Role.CLIENT);
+
+        user.setActive(true);
+
+        User savedUser = userRepository.save(user);
+
+        return userMapper.toUserDTO(savedUser);
     }
 
     public Optional<UserDTO> getUserByEmail(String email){

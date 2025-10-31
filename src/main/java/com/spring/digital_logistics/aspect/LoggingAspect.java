@@ -19,6 +19,7 @@ public class LoggingAspect {
         System.out.println("[AOP] Appel de la méthode : " + joinPoint.getSignature().getName());
     }
 
+
     @AfterReturning(pointcut = "userServiceMethodes()" , returning = "result")
     public void LogAfter(JoinPoint jointPoint , Object result){
         System.out.println("[AOP] Méthode " + jointPoint.getSignature().getName() + "terminée, resultat : " + result);

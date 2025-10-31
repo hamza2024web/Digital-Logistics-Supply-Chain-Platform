@@ -1,7 +1,7 @@
 package com.spring.digital_logistics.controller;
 
-import com.spring.digital_logistics.dto.UserCreateDTO;
-import com.spring.digital_logistics.dto.UserDTO;
+import com.spring.digital_logistics.dto.request.UserCreateDTO;
+import com.spring.digital_logistics.dto.response.UserDTO;
 import com.spring.digital_logistics.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserDTO> createUser(@RequestBody UserCreateDTO userCreateDTO){
-        UserDTO createUser = userService.createUser(userCreateDTO);
+        UserDTO createUser = userService.register(userCreateDTO);
         return ResponseEntity.ok(createUser);
     }
 
