@@ -11,8 +11,6 @@ public class GlobalExceptionHandler{
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
-    @ExceptionHandler(EmailAlreadyUsedException.class)
-
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleAll(Exception ex){
