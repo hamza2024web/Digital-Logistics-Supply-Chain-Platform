@@ -6,10 +6,10 @@ import jakarta.validation.constraints.*;
 @Data
 public class UserCreateDTO {
     @NotBlank(message = "le prénom est obligatoire")
-    private String first_name;
+    private String firstName;
 
     @NotBlank(message = "le nom est obligatoire")
-    private String last_name;
+    private String lastName;
 
     @Email(message = "L'email doit étre valide")
     @NotBlank(message = "L'email est obligatoire")
