@@ -99,4 +99,13 @@ public class UserService {
 
         return userMapper.toUserDTO(savedUser);
     }
+
+    public UserDTO updateUserStatus(Long userId, boolean isActive){
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("Utilisateur non trouvé avec l'ID : " + userId));
+
+        user.setActive(isActive);
+        User updatedUser = userRepository.save(user);
+
+        return userMapper.toUserDTO(updatedUser);
+    }
 }

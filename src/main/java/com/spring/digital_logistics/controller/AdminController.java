@@ -43,4 +43,11 @@ public class AdminController {
         UserDTO createdUser = userService.createUserByAdmin(createDTO);
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
+
+    @Operation(summary = "Modifier un utilisateur")
+    @PatchMapping("/users/{id}/status")
+    public ResponseEntity<UserDTO> updateUserActivationStatus(@PathVariable Long id, @RequestParam boolean isActive){
+        UserDTO updatedUser = userService.updateUserStatus(id,isActive);
+        return ResponseEntity.ok(updatedUser);
+    }
 }
