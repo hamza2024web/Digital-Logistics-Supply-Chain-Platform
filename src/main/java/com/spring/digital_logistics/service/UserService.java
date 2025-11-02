@@ -1,5 +1,6 @@
 package com.spring.digital_logistics.service;
 
+import com.spring.digital_logistics.dto.request.AdminUserCreateDTO;
 import com.spring.digital_logistics.dto.request.LoginDTO;
 import com.spring.digital_logistics.dto.request.UserCreateDTO;
 import com.spring.digital_logistics.dto.response.LoginResponseDTO;
@@ -19,7 +20,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -74,5 +77,44 @@ public class UserService {
         return Optional.of(userMapper.toUserDTO(user));
     }
 
+    public List<UserDTO> getAllUsers(){
+        List<User> users = userRepository.findAll();
+        return users.stream().map(userMapper::toUserDTO).collect(Collectors.toList());
+    }
 
+    public UserDTO createUserByAdmin(AdminUserCreateDTO createDTO){
+        if (userRepository.findByEmail(createDTO.getEmail()).isPresent()){
+            throw new EmailAlreadyUsedException("Cet Email est déjà utilisé !");
+        }
+
+        User user = new User();
+        user.setFirstName(createDTO.getFirstName());
+        user.setLastName(createDTO.getLastName());
+        user.setEmail(createDTO.getEmail());
+        user.setPassword(passwordEncoder.encode(createDTO.getPassword()));
+        user.setRole(createDTO.getRole());
+        user.setActive(true);
+
+        User savedUser = userRepository.save(user);
+
+        return userMapper.toUserDTO(savedUser);
+    }
+
+    public UserDTO updateUserStatus(Long userId, boolean isActive){
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("Utilisateur non trouvé avec l'ID : " + userId));
+
+        user.setActive(isActive);
+        User updatedUser = userRepository.save(user);
+
+        return userMapper.toUserDTO(updatedUser);
+    }
+
+    @Transactional
+    public void deleteUser(Long userId){
+        if (!userRepository.existsById(userId)){
+            throw new UserNotFoundException("Utilisateur non trouvé avec l'ID : " + userId);
+        }
+
+        userRepository.deleteById(userId);
+    }
 }
