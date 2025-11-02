@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminController {
 
     @GetMapping("/hello")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> sayHelloToAdmin(){
         return ResponseEntity.ok("Bonjour, Administrateur ! Si vous voyez ce message, votre token est valide et vous avez le bon rôle.");
     }
