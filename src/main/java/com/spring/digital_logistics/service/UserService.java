@@ -1,5 +1,6 @@
 package com.spring.digital_logistics.service;
 
+import com.spring.digital_logistics.dto.request.AdminUserCreateDTO;
 import com.spring.digital_logistics.dto.request.LoginDTO;
 import com.spring.digital_logistics.dto.request.UserCreateDTO;
 import com.spring.digital_logistics.dto.response.LoginResponseDTO;
@@ -79,5 +80,23 @@ public class UserService {
     public List<UserDTO> getAllUsers(){
         List<User> users = userRepository.findAll();
         return users.stream().map(userMapper::toUserDTO).collect(Collectors.toList());
+    }
+
+    public UserDTO createUserByAdmin(AdminUserCreateDTO createDTO){
+        if (userRepository.findByEmail(createDTO.getEmail()).isPresent()){
+            throw new EmailAlreadyUsedException("Cet Email est déjà utilisé !");
+        }
+
+        User user = new User();
+        user.setFirstName(createDTO.getFirstName());
+        user.setLastName(createDTO.getLastName());
+        user.setEmail(createDTO.getEmail());
+        user.setPassword(passwordEncoder.encode(createDTO.getPassword()));
+        user.setRole(createDTO.getRole());
+        user.setActive(true);
+
+        User savedUser = userRepository.save(user);
+
+        return userMapper.toUserDTO(savedUser);
     }
 }
