@@ -46,8 +46,17 @@ public class AdminController {
 
     @Operation(summary = "Modifier un utilisateur")
     @PatchMapping("/users/{id}/status")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<UserDTO> updateUserActivationStatus(@PathVariable Long id, @RequestParam boolean isActive){
         UserDTO updatedUser = userService.updateUserStatus(id,isActive);
         return ResponseEntity.ok(updatedUser);
+    }
+
+    @Operation(summary = "Supprimer un utilisateur")
+    @DeleteMapping("/users/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(@PathVariable Long id){
+        userService.deleteUser(id);
     }
 }
