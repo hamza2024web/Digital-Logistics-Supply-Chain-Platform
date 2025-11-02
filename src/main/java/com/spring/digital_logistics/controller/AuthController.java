@@ -32,7 +32,7 @@ public class AuthController {
     @Operation(summary = "Authentification d'un utilisateur")
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginDTO loginDTO){
-        LoginResponseDTO loginResponseDTO = userService.login(loginDTO);
-        return ResponseEntity.ok(loginResponseDTO);
+        LoginResponseDTO response = userService.login(loginDTO);
+        return ResponseEntity.ok(response);
     }
 }
