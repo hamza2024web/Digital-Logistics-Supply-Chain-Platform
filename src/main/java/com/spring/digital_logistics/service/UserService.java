@@ -2,6 +2,7 @@ package com.spring.digital_logistics.service;
 
 import com.spring.digital_logistics.dto.request.LoginDTO;
 import com.spring.digital_logistics.dto.request.UserCreateDTO;
+import com.spring.digital_logistics.dto.response.LoginResponseDTO;
 import com.spring.digital_logistics.dto.response.UserDTO;
 import com.spring.digital_logistics.entity.User;
 import com.spring.digital_logistics.entity.enums.Role;
@@ -11,8 +12,11 @@ import com.spring.digital_logistics.mapper.UserMapper;
 import com.spring.digital_logistics.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -22,13 +26,17 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
 
     @Autowired
-    public UserService(UserRepository userRepository , UserMapper userMapper){
+    public UserService(UserRepository userRepository , UserMapper userMapper, PasswordEncoder passwordEncoder,JwtService jwtService, AuthenticationManager authenticationManager){
         this.userRepository = userRepository;
         this.userMapper = userMapper;
-        this.passwordEncoder = new BCryptPasswordEncoder();
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+        this.authenticationManager = authenticationManager;
     }
 
     @Transactional
@@ -51,14 +59,14 @@ public class UserService {
         return userMapper.toUserDTO(savedUser);
     }
 
-    public UserDTO login(LoginDTO loginDTO){
-        User user = userRepository.findByEmail(loginDTO.getEmail()).orElseThrow(() -> new UserNotFoundException("Utilisateur non trouvé"));
+    public LoginResponseDTO login(LoginDTO loginDTO){
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getEmail(),loginDTO.getPassword()));
 
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        if (!encoder.matches(loginDTO.getPassword(), user.getPassword())){
-            throw new BadCredentialsException("Mot De Passe incorrect");
-        }
-        return userMapper.toUserDTO(user);
+        User user = userRepository.findByEmail(loginDTO.getEmail()).orElseThrow();
+
+        String jwtToken  = jwtService.generateToken(user);
+
+        return new LoginResponseDTO(jwtToken);
     }
 
     public Optional<UserDTO> getUserByEmail(String email){

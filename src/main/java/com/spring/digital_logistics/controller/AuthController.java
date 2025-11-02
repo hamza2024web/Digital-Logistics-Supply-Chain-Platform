@@ -2,6 +2,7 @@ package com.spring.digital_logistics.controller;
 
 import com.spring.digital_logistics.dto.request.LoginDTO;
 import com.spring.digital_logistics.dto.request.UserCreateDTO;
+import com.spring.digital_logistics.dto.response.LoginResponseDTO;
 import com.spring.digital_logistics.dto.response.UserDTO;
 import com.spring.digital_logistics.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,8 +31,8 @@ public class AuthController {
 
     @Operation(summary = "Authentification d'un utilisateur")
     @PostMapping("/login")
-    public ResponseEntity<UserDTO> login(@Valid @RequestBody LoginDTO loginDTO){
-        UserDTO userDTO = userService.login(loginDTO);
-        return ResponseEntity.ok(userDTO);
+    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginDTO loginDTO){
+        LoginResponseDTO loginResponseDTO = userService.login(loginDTO);
+        return ResponseEntity.ok(loginResponseDTO);
     }
 }
