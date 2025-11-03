@@ -1,7 +1,7 @@
 package com.spring.digital_logistics.mapper;
 
-import com.spring.digital_logistics.dto.request.ProductCreateDTO;
-import com.spring.digital_logistics.dto.response.ProductDTO;
+import com.spring.digital_logistics.dto.request.product.ProductCreateDTO;
+import com.spring.digital_logistics.dto.response.product.ProductDTO;
 import com.spring.digital_logistics.entity.Product;
 import org.mapstruct.Mapper;
 

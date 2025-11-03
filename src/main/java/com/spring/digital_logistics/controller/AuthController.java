@@ -1,9 +1,9 @@
 package com.spring.digital_logistics.controller;
 
-import com.spring.digital_logistics.dto.request.LoginDTO;
-import com.spring.digital_logistics.dto.request.UserCreateDTO;
-import com.spring.digital_logistics.dto.response.LoginResponseDTO;
-import com.spring.digital_logistics.dto.response.UserDTO;
+import com.spring.digital_logistics.dto.request.login.LoginDTO;
+import com.spring.digital_logistics.dto.request.user.UserCreateDTO;
+import com.spring.digital_logistics.dto.response.login.LoginResponseDTO;
+import com.spring.digital_logistics.dto.response.user.UserDTO;
 import com.spring.digital_logistics.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;

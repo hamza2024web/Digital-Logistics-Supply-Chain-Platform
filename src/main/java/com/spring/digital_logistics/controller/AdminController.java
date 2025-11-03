@@ -1,14 +1,13 @@
 package com.spring.digital_logistics.controller;
 
-import com.spring.digital_logistics.dto.request.AdminUserCreateDTO;
-import com.spring.digital_logistics.dto.request.ProductCreateDTO;
-import com.spring.digital_logistics.dto.response.ProductDTO;
-import com.spring.digital_logistics.dto.response.UserDTO;
+import com.spring.digital_logistics.dto.request.user.AdminUserCreateDTO;
+import com.spring.digital_logistics.dto.request.product.ProductCreateDTO;
+import com.spring.digital_logistics.dto.response.product.ProductDTO;
+import com.spring.digital_logistics.dto.response.user.UserDTO;
 import com.spring.digital_logistics.service.ProductService;
 import com.spring.digital_logistics.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

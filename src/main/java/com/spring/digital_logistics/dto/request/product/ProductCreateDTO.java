@@ -1,4 +1,4 @@
-package com.spring.digital_logistics.dto.request;
+package com.spring.digital_logistics.dto.request.product;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

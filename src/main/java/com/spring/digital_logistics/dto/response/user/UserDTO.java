@@ -1,4 +1,4 @@
-package com.spring.digital_logistics.dto.response;
+package com.spring.digital_logistics.dto.response.user;
 
 import com.spring.digital_logistics.entity.enums.Role;
 import lombok.Data;

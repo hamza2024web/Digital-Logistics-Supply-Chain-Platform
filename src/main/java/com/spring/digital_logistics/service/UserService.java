@@ -1,10 +1,10 @@
 package com.spring.digital_logistics.service;
 
-import com.spring.digital_logistics.dto.request.AdminUserCreateDTO;
-import com.spring.digital_logistics.dto.request.LoginDTO;
-import com.spring.digital_logistics.dto.request.UserCreateDTO;
-import com.spring.digital_logistics.dto.response.LoginResponseDTO;
-import com.spring.digital_logistics.dto.response.UserDTO;
+import com.spring.digital_logistics.dto.request.user.AdminUserCreateDTO;
+import com.spring.digital_logistics.dto.request.login.LoginDTO;
+import com.spring.digital_logistics.dto.request.user.UserCreateDTO;
+import com.spring.digital_logistics.dto.response.login.LoginResponseDTO;
+import com.spring.digital_logistics.dto.response.user.UserDTO;
 import com.spring.digital_logistics.entity.User;
 import com.spring.digital_logistics.entity.enums.Role;
 import com.spring.digital_logistics.exception.EmailAlreadyUsedException;

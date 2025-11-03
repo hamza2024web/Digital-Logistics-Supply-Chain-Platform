@@ -1,4 +1,4 @@
-package com.spring.digital_logistics.dto.response;
+package com.spring.digital_logistics.dto.response.login;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

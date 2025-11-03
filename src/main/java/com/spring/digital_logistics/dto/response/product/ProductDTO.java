@@ -1,4 +1,4 @@
-package com.spring.digital_logistics.dto.response;
+package com.spring.digital_logistics.dto.response.product;
 
 import lombok.Data;
 

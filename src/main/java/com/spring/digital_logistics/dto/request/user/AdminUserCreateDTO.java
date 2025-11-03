@@ -1,4 +1,4 @@
-package com.spring.digital_logistics.dto.request;
+package com.spring.digital_logistics.dto.request.user;
 
 import com.spring.digital_logistics.entity.enums.Role;
 import jakarta.validation.constraints.Email;
