@@ -1,7 +1,10 @@
 package com.spring.digital_logistics.controller;
 
 import com.spring.digital_logistics.dto.request.AdminUserCreateDTO;
+import com.spring.digital_logistics.dto.request.ProductCreateDTO;
+import com.spring.digital_logistics.dto.response.ProductDTO;
 import com.spring.digital_logistics.dto.response.UserDTO;
+import com.spring.digital_logistics.service.ProductService;
 import com.spring.digital_logistics.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -18,10 +21,13 @@ import java.util.List;
 public class AdminController {
 
     private final UserService userService;
+    private final ProductService productService;
 
-    public AdminController(UserService userService){
+    public AdminController(UserService userService,ProductService productService){
         this.userService = userService;
+        this.productService = productService;
     }
+
     @GetMapping("/hello")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> sayHelloToAdmin(){
@@ -58,5 +64,27 @@ public class AdminController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@PathVariable Long id){
         userService.deleteUser(id);
+    }
+
+    @Operation(summary = "Crée un produit")
+    @PostMapping("/prodcuts")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<ProductDTO> createProduct(@Valid @RequestBody ProductCreateDTO createDTO){
+        ProductDTO newProduct = productService.createProduct(createDTO);
+        return new ResponseEntity<>(newProduct, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/products")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<List<ProductDTO>> getAllProducts(){
+        List<ProductDTO> products = productService.getAllProducts();
+        return ResponseEntity.ok(products);
+    }
+
+    @DeleteMapping("/products/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteProduct(@PathVariable Long id){
+        productService.deleteProduct(id);
     }
 }
