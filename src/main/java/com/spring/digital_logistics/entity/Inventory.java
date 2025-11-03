@@ -27,5 +27,6 @@ public class Inventory {
     private Product product;
 
     private int qtyOnHand;
+
     private int qtyReserved;
 }
