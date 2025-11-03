@@ -105,7 +105,7 @@ public class AdminController {
     }
 
     @Operation(summary = "Supprimer un entrepôts")
-    @GetMapping("Warehouse/{id}")
+    @DeleteMapping("Warehouse/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteWarehouse(@PathVariable Long id){
