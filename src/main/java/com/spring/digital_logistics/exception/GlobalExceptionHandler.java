@@ -9,9 +9,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler{
-
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<String> handleUserNotFound(UserNotFoundException ex){
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<String> handleResourceNotfound(ResourceNotFoundException ex){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
@@ -31,8 +30,8 @@ public class GlobalExceptionHandler{
         return new ResponseEntity<>("Accès refusé. Vous n'avez pas les droites nécessaires.",HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<String>  handleProductNotFound(ProductNotFoundException ex){
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    @ExceptionHandler(WarehouseCodeAlreadyUsedException.class)
+    public ResponseEntity<String> handleCodeAlreadyUsed(WarehouseCodeAlreadyUsedException ex){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 }

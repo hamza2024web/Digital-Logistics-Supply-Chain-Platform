@@ -3,7 +3,7 @@ package com.spring.digital_logistics.service;
 import com.spring.digital_logistics.dto.request.ProductCreateDTO;
 import com.spring.digital_logistics.dto.response.ProductDTO;
 import com.spring.digital_logistics.entity.Product;
-import com.spring.digital_logistics.exception.ProductNotFoundException;
+import com.spring.digital_logistics.exception.ResourceNotFoundException;
 import com.spring.digital_logistics.mapper.ProductMapper;
 import com.spring.digital_logistics.repository.ProductRepository;
 import org.springframework.stereotype.Service;
@@ -36,7 +36,7 @@ public class ProductService {
     @Transactional
     public void deleteProduct(Long id){
         if (!productRepository.existsById(id)){
-            throw new ProductNotFoundException("Produit non trouvé avec L'ID : " + id);
+            throw new ResourceNotFoundException("Produit non trouvé avec L'ID : " + id);
         }
         productRepository.deleteById(id);
     }
