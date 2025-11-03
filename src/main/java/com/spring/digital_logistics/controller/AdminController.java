@@ -28,12 +28,6 @@ public class AdminController {
         this.productService = productService;
     }
 
-    @GetMapping("/hello")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<String> sayHelloToAdmin(){
-        return ResponseEntity.ok("Bonjour, Administrateur ! Si vous voyez ce message, votre token est valide et vous avez le bon rôle.");
-    }
-
     @Operation(summary = "Obtenir Tous les Utilisateurs")
     @GetMapping("/users")
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -74,6 +68,7 @@ public class AdminController {
         return new ResponseEntity<>(newProduct, HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Obtenir tous les produits")
     @GetMapping("/products")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<ProductDTO>> getAllProducts(){
@@ -81,6 +76,7 @@ public class AdminController {
         return ResponseEntity.ok(products);
     }
 
+    @Operation(summary = "supprimer un produit")
     @DeleteMapping("/products/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)

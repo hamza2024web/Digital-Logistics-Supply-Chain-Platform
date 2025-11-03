@@ -38,5 +38,6 @@ public class ProductService {
         if (!productRepository.existsById(id)){
             throw new ProductNotFoundException("Produit non trouvé avec L'ID : " + id);
         }
+        productRepository.deleteById(id);
     }
 }
