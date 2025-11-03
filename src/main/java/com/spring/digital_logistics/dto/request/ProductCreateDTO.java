@@ -2,9 +2,11 @@ package com.spring.digital_logistics.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
 import java.math.BigDecimal;
 
+@Data
 public class ProductCreateDTO {
     @NotBlank(message = "Le Sku ne doit pas étre vide")
     private String sku;
