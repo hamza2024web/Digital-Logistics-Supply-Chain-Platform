@@ -2,10 +2,13 @@ package com.spring.digital_logistics.controller;
 
 import com.spring.digital_logistics.dto.request.user.AdminUserCreateDTO;
 import com.spring.digital_logistics.dto.request.product.ProductCreateDTO;
+import com.spring.digital_logistics.dto.request.warehouse.WarehouseCreateDTO;
 import com.spring.digital_logistics.dto.response.product.ProductDTO;
 import com.spring.digital_logistics.dto.response.user.UserDTO;
+import com.spring.digital_logistics.dto.response.warehouse.WarehouseDTO;
 import com.spring.digital_logistics.service.ProductService;
 import com.spring.digital_logistics.service.UserService;
+import com.spring.digital_logistics.service.WarehouseService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -20,10 +23,12 @@ import java.util.List;
 public class AdminController {
 
     private final UserService userService;
+    private final WarehouseService warehouseService;
     private final ProductService productService;
 
-    public AdminController(UserService userService,ProductService productService){
+    public AdminController(UserService userService, WarehouseService warehouseService, ProductService productService){
         this.userService = userService;
+        this.warehouseService = warehouseService;
         this.productService = productService;
     }
 
@@ -81,5 +86,29 @@ public class AdminController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteProduct(@PathVariable Long id){
         productService.deleteProduct(id);
+    }
+
+    @Operation(summary = "Crée un entrepôts")
+    @PostMapping("/Warehouses")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<WarehouseDTO> createWarehouse(@Valid @RequestBody WarehouseCreateDTO createDTO){
+        WarehouseDTO newWarehouse = warehouseService.createWarehouse(createDTO);
+        return new ResponseEntity<>(newWarehouse, HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "Obtenir les entrepôts")
+    @GetMapping("/Warehouse")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<List<WarehouseDTO>> getAllWarehouse(){
+        List<WarehouseDTO> warehouses = warehouseService.getAllWarehouses();
+        return ResponseEntity.ok(warehouses);
+    }
+
+    @Operation(summary = "Supprimer un entrepôts")
+    @GetMapping("Warehouse/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteWarehouse(@PathVariable Long id){
+        warehouseService.deleteWarehouse(id);
     }
 }
