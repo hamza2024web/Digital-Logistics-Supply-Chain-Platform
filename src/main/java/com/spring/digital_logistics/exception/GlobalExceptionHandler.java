@@ -30,4 +30,9 @@ public class GlobalExceptionHandler{
     public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex){
         return new ResponseEntity<>("Accès refusé. Vous n'avez pas les droites nécessaires.",HttpStatus.FORBIDDEN);
     }
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<String>  handleProductNotFound(ProductNotFoundException ex){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
 }
