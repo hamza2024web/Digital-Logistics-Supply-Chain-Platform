@@ -31,6 +31,5 @@ public class InventoryMovement {
     private MovementType type;
 
     private int qty;
-
     private LocalDateTime occurredAt;
 }
