@@ -14,7 +14,7 @@ public class WarehouseManagerController {
 
     private final InventoryService inventoryService;
 
-    private WarehouseManagerController(InventoryService inventoryService){
+    public WarehouseManagerController(InventoryService inventoryService){
         this.inventoryService = inventoryService;
     }
 
