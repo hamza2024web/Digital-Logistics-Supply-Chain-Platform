@@ -1,7 +1,7 @@
 package com.spring.digital_logistics.controller;
 
-import com.spring.digital_logistics.dto.request.UserCreateDTO;
-import com.spring.digital_logistics.dto.response.UserDTO;
+import com.spring.digital_logistics.dto.request.user.UserCreateDTO;
+import com.spring.digital_logistics.dto.response.user.UserDTO;
 import com.spring.digital_logistics.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

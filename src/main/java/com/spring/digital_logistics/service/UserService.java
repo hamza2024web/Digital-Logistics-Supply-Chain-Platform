@@ -1,24 +1,22 @@
 package com.spring.digital_logistics.service;
 
-import com.spring.digital_logistics.dto.request.AdminUserCreateDTO;
-import com.spring.digital_logistics.dto.request.LoginDTO;
-import com.spring.digital_logistics.dto.request.UserCreateDTO;
-import com.spring.digital_logistics.dto.response.LoginResponseDTO;
-import com.spring.digital_logistics.dto.response.UserDTO;
+import com.spring.digital_logistics.dto.request.user.AdminUserCreateDTO;
+import com.spring.digital_logistics.dto.request.login.LoginDTO;
+import com.spring.digital_logistics.dto.request.user.UserCreateDTO;
+import com.spring.digital_logistics.dto.response.login.LoginResponseDTO;
+import com.spring.digital_logistics.dto.response.user.UserDTO;
 import com.spring.digital_logistics.entity.User;
 import com.spring.digital_logistics.entity.enums.Role;
 import com.spring.digital_logistics.exception.EmailAlreadyUsedException;
-import com.spring.digital_logistics.exception.UserNotFoundException;
+import com.spring.digital_logistics.exception.ResourceNotFoundException;
 import com.spring.digital_logistics.mapper.UserMapper;
 import com.spring.digital_logistics.repository.UserRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -73,7 +71,7 @@ public class UserService {
     }
 
     public Optional<UserDTO> getUserByEmail(String email){
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("Utilisateur non trouvé avec l'email : " + email));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé avec l'email : " + email));
         return Optional.of(userMapper.toUserDTO(user));
     }
 
@@ -101,7 +99,7 @@ public class UserService {
     }
 
     public UserDTO updateUserStatus(Long userId, boolean isActive){
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("Utilisateur non trouvé avec l'ID : " + userId));
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé avec l'ID : " + userId));
 
         user.setActive(isActive);
         User updatedUser = userRepository.save(user);
@@ -112,7 +110,7 @@ public class UserService {
     @Transactional
     public void deleteUser(Long userId){
         if (!userRepository.existsById(userId)){
-            throw new UserNotFoundException("Utilisateur non trouvé avec l'ID : " + userId);
+            throw new ResourceNotFoundException("Utilisateur non trouvé avec l'ID : " + userId);
         }
 
         userRepository.deleteById(userId);

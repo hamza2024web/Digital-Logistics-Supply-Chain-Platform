@@ -1,4 +1,4 @@
-package com.spring.digital_logistics.dto.request;
+package com.spring.digital_logistics.dto.request.user;
 
 import lombok.Data;
 import jakarta.validation.constraints.*;

@@ -1,11 +1,16 @@
 package com.spring.digital_logistics.controller;
 
-import com.spring.digital_logistics.dto.request.AdminUserCreateDTO;
-import com.spring.digital_logistics.dto.response.UserDTO;
+import com.spring.digital_logistics.dto.request.user.AdminUserCreateDTO;
+import com.spring.digital_logistics.dto.request.product.ProductCreateDTO;
+import com.spring.digital_logistics.dto.request.warehouse.WarehouseCreateDTO;
+import com.spring.digital_logistics.dto.response.product.ProductDTO;
+import com.spring.digital_logistics.dto.response.user.UserDTO;
+import com.spring.digital_logistics.dto.response.warehouse.WarehouseDTO;
+import com.spring.digital_logistics.service.ProductService;
 import com.spring.digital_logistics.service.UserService;
+import com.spring.digital_logistics.service.WarehouseService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,14 +23,13 @@ import java.util.List;
 public class AdminController {
 
     private final UserService userService;
+    private final WarehouseService warehouseService;
+    private final ProductService productService;
 
-    public AdminController(UserService userService){
+    public AdminController(UserService userService, WarehouseService warehouseService, ProductService productService){
         this.userService = userService;
-    }
-    @GetMapping("/hello")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<String> sayHelloToAdmin(){
-        return ResponseEntity.ok("Bonjour, Administrateur ! Si vous voyez ce message, votre token est valide et vous avez le bon rôle.");
+        this.warehouseService = warehouseService;
+        this.productService = productService;
     }
 
     @Operation(summary = "Obtenir Tous les Utilisateurs")
@@ -58,5 +62,53 @@ public class AdminController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@PathVariable Long id){
         userService.deleteUser(id);
+    }
+
+    @Operation(summary = "Crée un produit")
+    @PostMapping("/prodcuts")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<ProductDTO> createProduct(@Valid @RequestBody ProductCreateDTO createDTO){
+        ProductDTO newProduct = productService.createProduct(createDTO);
+        return new ResponseEntity<>(newProduct, HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "Obtenir tous les produits")
+    @GetMapping("/products")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<List<ProductDTO>> getAllProducts(){
+        List<ProductDTO> products = productService.getAllProducts();
+        return ResponseEntity.ok(products);
+    }
+
+    @Operation(summary = "supprimer un produit")
+    @DeleteMapping("/products/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteProduct(@PathVariable Long id){
+        productService.deleteProduct(id);
+    }
+
+    @Operation(summary = "Crée un entrepôts")
+    @PostMapping("/Warehouses")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<WarehouseDTO> createWarehouse(@Valid @RequestBody WarehouseCreateDTO createDTO){
+        WarehouseDTO newWarehouse = warehouseService.createWarehouse(createDTO);
+        return new ResponseEntity<>(newWarehouse, HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "Obtenir les entrepôts")
+    @GetMapping("/Warehouse")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<List<WarehouseDTO>> getAllWarehouse(){
+        List<WarehouseDTO> warehouses = warehouseService.getAllWarehouses();
+        return ResponseEntity.ok(warehouses);
+    }
+
+    @Operation(summary = "Supprimer un entrepôts")
+    @DeleteMapping("Warehouse/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteWarehouse(@PathVariable Long id){
+        warehouseService.deleteWarehouse(id);
     }
 }

@@ -28,9 +28,15 @@ public class InventoryMovement {
     private Warehouse warehouse;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private MovementType type;
 
+    @Column(nullable = false)
     private int qty;
 
+    @Column(nullable = false)
+    private String reason;
+
+    @Column(nullable = false)
     private LocalDateTime occurredAt;
 }
