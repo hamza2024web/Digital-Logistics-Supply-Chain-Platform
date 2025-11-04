@@ -14,7 +14,7 @@ public interface SupplierMapper {
 
     SupplierDTO toDto(Supplier supplier);
 
-    Supplier toEnity(SupplierCreateDTO createDTO);
+    Supplier toEntity(SupplierCreateDTO createDTO);
 
     void updateFromDto(SupplierCreateDTO dto, @MappingTarget Supplier entity);
 }
