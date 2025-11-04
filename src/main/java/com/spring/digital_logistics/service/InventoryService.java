@@ -1,5 +1,6 @@
 package com.spring.digital_logistics.service;
 
+import com.spring.digital_logistics.dto.request.adjustement.AdjustmentRequestDTO;
 import com.spring.digital_logistics.dto.request.inventory.MovementRequestDTO;
 import com.spring.digital_logistics.dto.response.inventory.InventoryDTO;
 import com.spring.digital_logistics.entity.Inventory;
@@ -88,6 +89,45 @@ public class InventoryService {
         movement.setWarehouse(warehouse);
         movement.setType(MovementType.OUTBOUND);
         movement.setQty(movementRequest.getQuantity());
+        movement.setOccurredAt(LocalDateTime.now());
+        inventoryMovementRepository.save(movement);
+
+        return inventoryMapper.toDto(savedInventory);
+    }
+
+    @Transactional
+    public InventoryDTO recordAdjustement(AdjustmentRequestDTO adjustmentRequest){
+        Product product = productRepository.findById(adjustmentRequest.getProductId())
+                .orElseThrow(() -> new ResourceNotFoundException("Produit non trouvé avec l'ID: " + adjustmentRequest.getProductId()));
+
+        Warehouse warehouse = warehouseRepository.findById(adjustmentRequest.getWarehouseId())
+                .orElseThrow(() -> new ResourceNotFoundException("Entrepôt non trouvé avec l'ID: " + adjustmentRequest.getWarehouseId()));
+
+        Inventory inventory = inventoryRepository.findByProductAndWarehouse(product,warehouse)
+                .orElseGet(() -> {
+                    Inventory newInventory = new Inventory();
+                    newInventory.setProduct(product);
+                    newInventory.setWarehouse(warehouse);
+                    newInventory.setQtyOnHand(0);
+                    newInventory.setQtyReserved(0);
+                    return newInventory;
+                });
+
+        int adjustmentQty = adjustmentRequest.getQuantity();
+
+        if (adjustmentQty < 0 && inventory.getQtyOnHand() < Math.abs(adjustmentQty)){
+            throw new StockUnavailableException("Stock insuffisant pour l'ajustment négatif. Demandé : " + adjustmentQty + " , Disponible : " + inventory.getQtyOnHand());
+        }
+
+        inventory.setQtyOnHand(inventory.getQtyOnHand() + adjustmentQty);
+        Inventory savedInventory = inventoryRepository.save(inventory);
+
+        InventoryMovement movement = new InventoryMovement();
+        movement.setProduct(product);
+        movement.setWarehouse(warehouse);
+        movement.setType(MovementType.ADJUSTMENT);
+        movement.setQty(adjustmentQty);
+        movement.setReason(adjustmentRequest.getReason());
         movement.setOccurredAt(LocalDateTime.now());
         inventoryMovementRepository.save(movement);
 

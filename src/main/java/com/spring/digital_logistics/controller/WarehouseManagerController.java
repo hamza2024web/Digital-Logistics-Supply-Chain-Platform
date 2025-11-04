@@ -1,5 +1,6 @@
 package com.spring.digital_logistics.controller;
 
+import com.spring.digital_logistics.dto.request.adjustement.AdjustmentRequestDTO;
 import com.spring.digital_logistics.dto.request.inventory.MovementRequestDTO;
 import com.spring.digital_logistics.dto.response.inventory.InventoryDTO;
 import com.spring.digital_logistics.service.InventoryService;
@@ -35,6 +36,13 @@ public class WarehouseManagerController {
     @PreAuthorize("hasAuthority('WAREHOUSE_MANAGER')")
     public ResponseEntity<InventoryDTO> recordOutbound(@Valid @RequestBody MovementRequestDTO movementRequest){
         InventoryDTO updatedInventory = inventoryService.recordOutBoundMovement(movementRequest);
+        return ResponseEntity.ok(updatedInventory);
+    }
+
+    @PostMapping("/inventory/adjustment")
+    @PreAuthorize("hasAuthority('WAREHOUSE_MANAGER')")
+    public ResponseEntity<InventoryDTO> recordAdjustment(@Valid @RequestBody AdjustmentRequestDTO adjustmentRequest){
+        InventoryDTO updatedInventory = inventoryService.recordAdjustement(adjustmentRequest);
         return ResponseEntity.ok(updatedInventory);
     }
 }

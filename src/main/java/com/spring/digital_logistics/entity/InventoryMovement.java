@@ -35,5 +35,8 @@ public class InventoryMovement {
     private int qty;
 
     @Column(nullable = false)
+    private String reason;
+
+    @Column(nullable = false)
     private LocalDateTime occurredAt;
 }
