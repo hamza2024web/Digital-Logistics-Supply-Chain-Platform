@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
 @Data
-public class MovementRequest {
+public class MovementRequestDTO {
 
     @NotNull(message = "L'ID du produit est obligatoire")
     private Long productId;
