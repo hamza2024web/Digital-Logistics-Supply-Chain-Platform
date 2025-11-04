@@ -80,6 +80,17 @@ public class InventoryService {
             throw new StockUnavailableException("Stock insuffisant. Demandé : " + movementRequest.getQuantity() + ",Disponible : " + inventory.getQtyOnHand());
         }
 
+        inventory.setQtyOnHand(inventory.getQtyOnHand() - movementRequest.getQuantity());
+        Inventory savedInventory = inventoryRepository.save(inventory);
 
+        InventoryMovement movement = new InventoryMovement();
+        movement.setProduct(product);
+        movement.setWarehouse(warehouse);
+        movement.setType(MovementType.OUTBOUND);
+        movement.setQty(movementRequest.getQuantity());
+        movement.setOccurredAt(LocalDateTime.now());
+        inventoryMovementRepository.save(movement);
+
+        return inventoryMapper.toDto(savedInventory);
     }
 }
