@@ -8,6 +8,7 @@ import com.spring.digital_logistics.entity.Product;
 import com.spring.digital_logistics.entity.Warehouse;
 import com.spring.digital_logistics.entity.enums.MovementType;
 import com.spring.digital_logistics.exception.ResourceNotFoundException;
+import com.spring.digital_logistics.exception.StockUnavailableException;
 import com.spring.digital_logistics.mapper.InventoryMapper;
 import com.spring.digital_logistics.repository.InventoryMovementRepository;
 import com.spring.digital_logistics.repository.InventoryRepository;
@@ -64,5 +65,21 @@ public class InventoryService {
         inventoryMovementRepository.save(movement);
 
         return inventoryMapper.toDto(savedInventory);
+    }
+
+    @Transactional
+    public InventoryDTO recordOutBoundMovement(MovementRequestDTO movementRequest){
+
+        Product product = productRepository.findById(movementRequest.getProductId()).orElseThrow(() -> new ResourceNotFoundException("Produit non trouvé avec L'ID : " + movementRequest.getProductId()));
+
+        Warehouse warehouse = warehouseRepository.findById(movementRequest.getWarehouseId()).orElseThrow(() -> new ResourceNotFoundException("Entrepôt non trouvé avec l'ID: " + movementRequest.getWarehouseId()));
+
+        Inventory inventory = inventoryRepository.findByProductAndWarehouse(product, warehouse).orElseThrow(() -> new StockUnavailableException("Aucun stock trouvé pour ce produit dans cet entrepôt. Impossible de faire une sortie."));
+
+        if (inventory.getQtyOnHand() < movementRequest.getQuantity()) {
+            throw new StockUnavailableException("Stock insuffisant. Demandé : " + movementRequest.getQuantity() + ",Disponible : " + inventory.getQtyOnHand());
+        }
+
+
     }
 }

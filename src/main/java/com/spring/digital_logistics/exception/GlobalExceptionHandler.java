@@ -34,4 +34,9 @@ public class GlobalExceptionHandler{
     public ResponseEntity<String> handleCodeAlreadyUsed(WarehouseCodeAlreadyUsedException ex){
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
+
+    @ExceptionHandler(StockUnavailableException.class)
+    public ResponseEntity<String> handleStockUnavailable(StockUnavailableException ex){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
 }
