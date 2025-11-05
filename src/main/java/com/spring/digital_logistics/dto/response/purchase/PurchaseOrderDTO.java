@@ -5,7 +5,7 @@ import com.spring.digital_logistics.entity.enums.POStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class PuchaseOrderDTO {
+public class PurchaseOrderDTO {
     private Long id;
     private Long supplierId;
     private String supplierName;
