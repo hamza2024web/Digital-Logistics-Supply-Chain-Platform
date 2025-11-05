@@ -1,12 +1,15 @@
 package com.spring.digital_logistics.controller;
 
+import com.spring.digital_logistics.dto.request.supplier.SupplierCreateDTO;
 import com.spring.digital_logistics.dto.request.user.AdminUserCreateDTO;
 import com.spring.digital_logistics.dto.request.product.ProductCreateDTO;
 import com.spring.digital_logistics.dto.request.warehouse.WarehouseCreateDTO;
 import com.spring.digital_logistics.dto.response.product.ProductDTO;
+import com.spring.digital_logistics.dto.response.supplier.SupplierDTO;
 import com.spring.digital_logistics.dto.response.user.UserDTO;
 import com.spring.digital_logistics.dto.response.warehouse.WarehouseDTO;
 import com.spring.digital_logistics.service.ProductService;
+import com.spring.digital_logistics.service.SupplierService;
 import com.spring.digital_logistics.service.UserService;
 import com.spring.digital_logistics.service.WarehouseService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,11 +28,13 @@ public class AdminController {
     private final UserService userService;
     private final WarehouseService warehouseService;
     private final ProductService productService;
+    private final SupplierService supplierService;
 
-    public AdminController(UserService userService, WarehouseService warehouseService, ProductService productService){
+    public AdminController(UserService userService, WarehouseService warehouseService, ProductService productService, SupplierService supplierService){
         this.userService = userService;
         this.warehouseService = warehouseService;
         this.productService = productService;
+        this.supplierService = supplierService;
     }
 
     @Operation(summary = "Obtenir Tous les Utilisateurs")
@@ -110,5 +115,40 @@ public class AdminController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteWarehouse(@PathVariable Long id){
         warehouseService.deleteWarehouse(id);
+    }
+
+    @PostMapping("/suppliers")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<SupplierDTO> createSupplier(@Valid @RequestBody SupplierCreateDTO createDTO){
+        SupplierDTO newSupplier = supplierService.createSupplier(createDTO);
+        return new ResponseEntity<>(newSupplier, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/suppliers")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<List<SupplierDTO>> getAllSuppliers(){
+        List<SupplierDTO> suppliers = supplierService.getAllSupplier();
+        return ResponseEntity.ok(suppliers);
+    }
+
+    @GetMapping("/suppliers/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<SupplierDTO> getSupplierById(@PathVariable Long id){
+        SupplierDTO supplier = supplierService.getSupplierById(id);
+        return ResponseEntity.ok(supplier);
+    }
+
+    @PutMapping("/suppliers/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<SupplierDTO> updateSupplier(@PathVariable Long id, @Valid @RequestBody SupplierCreateDTO createDTO){
+        SupplierDTO updateSupplier = supplierService.updateSupplier(id,createDTO);
+        return ResponseEntity.ok(updateSupplier);
+    }
+
+    @DeleteMapping("/suppliers/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<String> deleteSupplier(@PathVariable Long id){
+        supplierService.deleteSupplier(id);
+        return ResponseEntity.noContent().build();
     }
 }
