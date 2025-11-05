@@ -117,6 +117,7 @@ public class AdminController {
         warehouseService.deleteWarehouse(id);
     }
 
+    @Operation(summary = "Crée un Fournisseur")
     @PostMapping("/suppliers")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<SupplierDTO> createSupplier(@Valid @RequestBody SupplierCreateDTO createDTO){
@@ -124,6 +125,7 @@ public class AdminController {
         return new ResponseEntity<>(newSupplier, HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Obtenir tous les fournisseurs")
     @GetMapping("/suppliers")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<SupplierDTO>> getAllSuppliers(){
@@ -131,6 +133,7 @@ public class AdminController {
         return ResponseEntity.ok(suppliers);
     }
 
+    @Operation(summary = "Obtenir un Fournisseur")
     @GetMapping("/suppliers/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<SupplierDTO> getSupplierById(@PathVariable Long id){
@@ -138,6 +141,7 @@ public class AdminController {
         return ResponseEntity.ok(supplier);
     }
 
+    @Operation(summary = "Modifier un fournisseur")
     @PutMapping("/suppliers/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<SupplierDTO> updateSupplier(@PathVariable Long id, @Valid @RequestBody SupplierCreateDTO createDTO){
@@ -145,6 +149,7 @@ public class AdminController {
         return ResponseEntity.ok(updateSupplier);
     }
 
+    @Operation(summary = "Supprimer un Fournisseur")
     @DeleteMapping("/suppliers/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> deleteSupplier(@PathVariable Long id){
