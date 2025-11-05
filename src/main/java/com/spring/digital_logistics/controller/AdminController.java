@@ -5,13 +5,12 @@ import com.spring.digital_logistics.dto.request.user.AdminUserCreateDTO;
 import com.spring.digital_logistics.dto.request.product.ProductCreateDTO;
 import com.spring.digital_logistics.dto.request.warehouse.WarehouseCreateDTO;
 import com.spring.digital_logistics.dto.response.product.ProductDTO;
+import com.spring.digital_logistics.dto.response.purchase.PurchaseOrderDTO;
+import com.spring.digital_logistics.dto.response.purchase.PurchaseOrderLineDTO;
 import com.spring.digital_logistics.dto.response.supplier.SupplierDTO;
 import com.spring.digital_logistics.dto.response.user.UserDTO;
 import com.spring.digital_logistics.dto.response.warehouse.WarehouseDTO;
-import com.spring.digital_logistics.service.ProductService;
-import com.spring.digital_logistics.service.SupplierService;
-import com.spring.digital_logistics.service.UserService;
-import com.spring.digital_logistics.service.WarehouseService;
+import com.spring.digital_logistics.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -29,12 +28,14 @@ public class AdminController {
     private final WarehouseService warehouseService;
     private final ProductService productService;
     private final SupplierService supplierService;
+    private final PurchaseOrderService purchaseOrderService;
 
-    public AdminController(UserService userService, WarehouseService warehouseService, ProductService productService, SupplierService supplierService){
+    public AdminController(UserService userService, WarehouseService warehouseService, ProductService productService, SupplierService supplierService, PurchaseOrderService purchaseOrderService){
         this.userService = userService;
         this.warehouseService = warehouseService;
         this.productService = productService;
         this.supplierService = supplierService;
+        this.purchaseOrderService = purchaseOrderService;
     }
 
     @Operation(summary = "Obtenir Tous les Utilisateurs")
@@ -155,5 +156,12 @@ public class AdminController {
     public ResponseEntity<String> deleteSupplier(@PathVariable Long id){
         supplierService.deleteSupplier(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/purchase-orders/")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(PurchaseOrderLineDTO createDTO){
+        PurchaseOrderDTO purchaseOrder = purchaseOrderService.createPurchaseOrder(createDTO);
+        return new ResponseEntity<>(purchaseOrder, HttpStatus.CREATED);
     }
 }
