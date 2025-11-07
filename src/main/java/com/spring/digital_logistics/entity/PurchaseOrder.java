@@ -6,7 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "purchase_order")
@@ -23,8 +25,20 @@ public class PurchaseOrder {
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "destination_warehouse_id")
+    private Warehouse destinationWarehouse;
+
     @Enumerated(EnumType.STRING)
     private POStatus status;
 
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<POLine> lines = new ArrayList<>();
+
+    public void addLine(POLine line){
+        this.lines.add(line);
+        line.setPurchaseOrder(this);
+    }
 }

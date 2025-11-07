@@ -8,12 +8,12 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class PuchaseOrderCreateDTO {
+public class PurchaseOrderCreateDTO {
     @NotNull(message = "L'ID du fournisseur est obligatoire")
     private Long supplierId;
 
     @NotNull(message = "L'ID de l'entrepôt de destination est obligatoire")
-    private Long destiantionWarehouseId;
+    private Long destinationWarehouseId;
 
     @NotEmpty(message = "Une commande doit contenir au moins un produit")
     @Valid

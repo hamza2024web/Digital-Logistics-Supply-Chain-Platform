@@ -1,5 +1,6 @@
 package com.spring.digital_logistics.controller;
 
+import com.spring.digital_logistics.dto.request.purchase.PurchaseOrderCreateDTO;
 import com.spring.digital_logistics.dto.request.supplier.SupplierCreateDTO;
 import com.spring.digital_logistics.dto.request.user.AdminUserCreateDTO;
 import com.spring.digital_logistics.dto.request.product.ProductCreateDTO;
@@ -160,7 +161,7 @@ public class AdminController {
 
     @PostMapping("/purchase-orders/")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(PurchaseOrderLineDTO createDTO){
+    public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(PurchaseOrderCreateDTO createDTO){
         PurchaseOrderDTO purchaseOrder = purchaseOrderService.createPurchaseOrder(createDTO);
         return new ResponseEntity<>(purchaseOrder, HttpStatus.CREATED);
     }
