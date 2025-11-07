@@ -161,9 +161,9 @@ public class AdminController {
 
     @PostMapping("/purchase-orders/")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(PurchaseOrderCreateDTO createDTO){
-        PurchaseOrderDTO purchaseOrder = purchaseOrderService.createPurchaseOrder(createDTO);
-        return new ResponseEntity<>(purchaseOrder, HttpStatus.CREATED);
+    public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(@Valid @RequestBody PurchaseOrderCreateDTO createDTO){
+        PurchaseOrderDTO newPurchaseOrder = purchaseOrderService.createPurchaseOrder(createDTO);
+        return new ResponseEntity<>(newPurchaseOrder, HttpStatus.CREATED);
     }
 
 
