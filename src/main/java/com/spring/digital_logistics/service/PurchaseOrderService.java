@@ -13,6 +13,7 @@ import com.spring.digital_logistics.repository.SupplierRepository;
 import com.spring.digital_logistics.repository.WarehouseRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -61,5 +62,20 @@ public class PurchaseOrderService {
         PurchaseOrder savedOrder = purchaseOrderRepository.save(purchaseOrder);
 
         return purchaseOrderMapper.toDto(savedOrder);
+    }
+
+    @Transactional
+    public PurchaseOrderDTO sendPurchaseOrder(Long orderId){
+        PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Commande non trouvée avec l'ID: " + orderId));
+
+        if (purchaseOrder.getStatus() != PurchaseOrderStatus.PENDING){
+            throw new IllegalStateException("Seule une commande avec le statut PENDING peut être envoyée. Statut actuel : " + purchaseOrder.getStatus());
+        }
+
+        purchaseOrder.setStatus(PurchaseOrderStatus.SENT);
+
+        PurchaseOrder savedPurchase = purchaseOrderRepository.save(purchaseOrder);
+        return purchaseOrderMapper.toDto(savedPurchase);
     }
 }

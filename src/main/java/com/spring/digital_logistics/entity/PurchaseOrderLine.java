@@ -34,5 +34,5 @@ public class PurchaseOrderLine {
     private BigDecimal price;
 
     @Column(nullable = false)
-    private Integer quantityReceived = 0; // J'ai ajouté ce champ qui manquait pour le DTO
+    private Integer quantityReceived = 0;
 }
