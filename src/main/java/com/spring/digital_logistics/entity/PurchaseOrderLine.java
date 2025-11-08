@@ -5,15 +5,14 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "po_line")
+@Table(name = "purchase_order_line")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class POLine {
+public class PurchaseOrderLine {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,11 +28,11 @@ public class POLine {
     private Product product;
 
     @Column(nullable = false)
-    private int qty;
+    private int quantity;
 
     @Column(nullable = false)
     private BigDecimal price;
 
     @Column(nullable = false)
-    private Integer quantityReserved = 0;
+    private Integer quantityReceived = 0; // J'ai ajouté ce champ qui manquait pour le DTO
 }

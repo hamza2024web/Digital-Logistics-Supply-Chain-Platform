@@ -1,6 +1,6 @@
 package com.spring.digital_logistics.entity;
 
-import com.spring.digital_logistics.entity.enums.POStatus;
+import com.spring.digital_logistics.entity.enums.PurchaseOrderStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,14 +30,14 @@ public class PurchaseOrder {
     private Warehouse destinationWarehouse;
 
     @Enumerated(EnumType.STRING)
-    private POStatus status;
+    private PurchaseOrderStatus status;
 
-    private LocalDateTime createdAt;
+    private LocalDateTime creationDate;
 
     @OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<POLine> lines = new ArrayList<>();
+    private List<PurchaseOrderLine> lines = new ArrayList<>();
 
-    public void addLine(POLine line){
+    public void addLine(PurchaseOrderLine line){
         this.lines.add(line);
         line.setPurchaseOrder(this);
     }

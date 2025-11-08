@@ -4,7 +4,7 @@ import com.spring.digital_logistics.dto.request.purchase.PurchaseOrderCreateDTO;
 import com.spring.digital_logistics.dto.request.purchase.PurchaseOrderLineCreateDTO;
 import com.spring.digital_logistics.dto.response.purchase.PurchaseOrderDTO;
 import com.spring.digital_logistics.entity.*;
-import com.spring.digital_logistics.entity.enums.POStatus;
+import com.spring.digital_logistics.entity.enums.PurchaseOrderStatus;
 import com.spring.digital_logistics.exception.ResourceNotFoundException;
 import com.spring.digital_logistics.mapper.PurchaseOrderMapper;
 import com.spring.digital_logistics.repository.ProductRepository;
@@ -43,17 +43,17 @@ public class PurchaseOrderService {
         PurchaseOrder purchaseOrder = new PurchaseOrder();
         purchaseOrder.setSupplier(supplier);
         purchaseOrder.setDestinationWarehouse(warehouse);
-        purchaseOrder.setStatus(POStatus.PENDING);
-        purchaseOrder.setCreatedAt(LocalDateTime.now());
+        purchaseOrder.setStatus(PurchaseOrderStatus.PENDING);
+        purchaseOrder.setCreationDate(LocalDateTime.now());
 
         for(PurchaseOrderLineCreateDTO lineDTO : createDTO.getLines()){
             Product product = productRepository.findById(lineDTO.getProductId()).orElseThrow(() -> new ResourceNotFoundException("Produit non trouvé avec l'ID: " + lineDTO.getProductId()));
 
-            POLine line = new POLine();
+            PurchaseOrderLine line = new PurchaseOrderLine();
             line.setProduct(product);
-            line.setQty(lineDTO.getQuantity());
+            line.setQuantity(lineDTO.getQuantity());
             line.setPrice(lineDTO.getPrice());
-            line.setQuantityReserved(0);
+            line.setQuantityReceived(0);
 
             purchaseOrder.addLine(line);
         }
