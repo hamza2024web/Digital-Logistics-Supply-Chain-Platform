@@ -77,11 +77,15 @@ public class InventoryService {
 
         Inventory inventory = inventoryRepository.findByProductAndWarehouse(product, warehouse).orElseThrow(() -> new StockUnavailableException("Aucun stock trouvé pour ce produit dans cet entrepôt. Impossible de faire une sortie."));
 
-        if (inventory.getQtyOnHand() < movementRequest.getQuantity()) {
-            throw new StockUnavailableException("Stock insuffisant. Demandé : " + movementRequest.getQuantity() + ",Disponible : " + inventory.getQtyOnHand());
+        int quantityToMove = movementRequest.getQuantity();
+
+        int availableStock = inventory.getQtyOnHand() - inventory.getQtyReserved();
+
+        if (availableStock < quantityToMove){
+            throw new StockUnavailableException("Stock disponible insuffisant. Demandé : " + quantityToMove + ", Disponible (non réservé) : " + availableStock);
         }
 
-        inventory.setQtyOnHand(inventory.getQtyOnHand() - movementRequest.getQuantity());
+        inventory.setQtyOnHand(inventory.getQtyOnHand() - quantityToMove);
         Inventory savedInventory = inventoryRepository.save(inventory);
 
         InventoryMovement movement = new InventoryMovement();
@@ -115,8 +119,11 @@ public class InventoryService {
 
         int adjustmentQty = adjustmentRequest.getQuantity();
 
-        if (adjustmentQty < 0 && inventory.getQtyOnHand() < Math.abs(adjustmentQty)){
-            throw new StockUnavailableException("Stock insuffisant pour l'ajustment négatif. Demandé : " + adjustmentQty + " , Disponible : " + inventory.getQtyOnHand());
+        if (adjustmentQty < 0){
+            int availableStock = inventory.getQtyOnHand() - inventory.getQtyReserved();
+            if (availableStock < Math.abs(adjustmentQty)) {
+                throw new StockUnavailableException("Stock disponible insuffisant pour l'ajustement. Demandé: " + adjustmentQty + ", Disponible (non réservé): " + availableStock);
+            }
         }
 
         inventory.setQtyOnHand(inventory.getQtyOnHand() + adjustmentQty);
@@ -127,7 +134,6 @@ public class InventoryService {
         movement.setWarehouse(warehouse);
         movement.setType(MovementType.ADJUSTMENT);
         movement.setQty(adjustmentQty);
-        movement.setReason(adjustmentRequest.getReason());
         movement.setOccurredAt(LocalDateTime.now());
         inventoryMovementRepository.save(movement);
 
