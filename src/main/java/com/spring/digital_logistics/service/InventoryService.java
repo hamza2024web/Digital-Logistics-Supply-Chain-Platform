@@ -134,7 +134,6 @@ public class InventoryService {
         movement.setWarehouse(warehouse);
         movement.setType(MovementType.ADJUSTMENT);
         movement.setQty(adjustmentQty);
-        movement.setReason(adjustmentRequest.getReason());
         movement.setOccurredAt(LocalDateTime.now());
         inventoryMovementRepository.save(movement);
 

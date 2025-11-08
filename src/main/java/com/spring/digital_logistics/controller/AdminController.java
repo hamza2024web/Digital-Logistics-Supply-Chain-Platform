@@ -166,7 +166,7 @@ public class AdminController {
         return new ResponseEntity<>(newPurchaseOrder, HttpStatus.CREATED);
     }
 
-    @PostMapping("/purchase-order/{id}/sned")
+    @PatchMapping("/purchase-order/{id}/send")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<PurchaseOrderDTO> sendPurchaseOrder(@PathVariable Long id){
         PurchaseOrderDTO updateOrder = purchaseOrderService.sendPurchaseOrder(id);
