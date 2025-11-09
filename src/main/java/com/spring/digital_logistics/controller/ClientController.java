@@ -11,6 +11,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/client")
 public class ClientController {
@@ -33,5 +35,12 @@ public class ClientController {
     public ResponseEntity<SalesOrderDTO> reserveOrderStock(@PathVariable Long orderId, @AuthenticationPrincipal User currentUser) {
         SalesOrderDTO reservedOrder = salesOrderService.reserveOrderStock(orderId, currentUser);
         return ResponseEntity.ok(reservedOrder);
+    }
+
+    @GetMapping("/orders")
+    @PreAuthorize("hasAuthority('CLIENT')")
+    public ResponseEntity<List<SalesOrderDTO>> getOrders(@AuthenticationPrincipal User client){
+        List<SalesOrderDTO> orders = salesOrderService.getMyOrder(client);
+        return ResponseEntity.ok(orders);
     }
 }

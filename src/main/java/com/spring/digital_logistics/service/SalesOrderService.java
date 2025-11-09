@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SalesOrderService {
@@ -78,5 +80,10 @@ public class SalesOrderService {
         SalesOrder savedOrder = salesOrderRepository.save(order);
 
         return salesOrderMapper.toDto(savedOrder);
+    }
+
+    public List<SalesOrderDTO> getMyOrder(User client){
+        List<SalesOrder> orders = salesOrderRepository.findAllByClientId(client.getId());
+        return orders.stream().map(salesOrderMapper::toDto).collect(Collectors.toList());
     }
 }
