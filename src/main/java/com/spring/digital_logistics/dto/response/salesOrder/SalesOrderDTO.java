@@ -2,18 +2,19 @@ package com.spring.digital_logistics.dto.response.salesOrder;
 
 import com.spring.digital_logistics.entity.enums.SalesOrderStatus;
 import com.spring.digital_logistics.entity.enums.ShipmentStatus;
+import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+@Data
 public class SalesOrderDTO {
     private Long id;
     private Long clientId;
-    private String clientName;
+    private String clientUsername;
     private Long warehouseId;
     private String warehouseCode;
     private SalesOrderStatus status;
     private LocalDateTime createdAt;
-    private String shipementCarrier;
-    private String shipementTrackingNumber;
-    private ShipmentStatus shipmentStatus;
+    private List<SalesOrderLineDTO> lines;
 }
