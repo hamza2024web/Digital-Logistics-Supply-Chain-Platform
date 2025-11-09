@@ -86,4 +86,14 @@ public class SalesOrderService {
         List<SalesOrder> orders = salesOrderRepository.findAllByClientId(client.getId());
         return orders.stream().map(salesOrderMapper::toDto).collect(Collectors.toList());
     }
+
+    public SalesOrderDTO getOrder(Long orderId , User client){
+        SalesOrder order = salesOrderRepository.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Commande non trouvé avec l'ID : " + orderId));
+
+        if (!order.getClient().getId().equals(client.getId())){
+            throw new SecurityException("Vous n'êtes pas autorisé à voir cette commande.");
+        }
+
+        return salesOrderMapper.toDto(order);
+    }
 }
