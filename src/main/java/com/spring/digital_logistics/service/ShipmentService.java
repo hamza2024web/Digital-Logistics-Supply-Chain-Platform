@@ -80,4 +80,27 @@ public class ShipmentService {
 
         return shipmentMapper.toDto(updatedShipment);
     }
+
+    @Transactional
+    public ShipmentDTO deliverOrder(Long orderId){
+        SalesOrder order = salesOrderRepository.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Commande non trouvé avec L'ID : " + orderId));
+
+        Shipment shipment = order.getShipment();
+        if (shipment == null){
+            throw new IllegalStateException("Cette commande n'a pas d'expédition associée.");
+        }
+
+        if (order.getStatus() != SalesOrderStatus.SHIPPED || shipment.getStatus() != ShipmentStatus.IN_TRANSIT){
+            throw new IllegalStateException("Une commande ne peut être marquée comme livrée que si elle est SHIPPED et son expédition IN_TRANSIT.");
+        }
+
+        order.setStatus(SalesOrderStatus.DELIVERED);
+        shipment.setStatus(ShipmentStatus.DELIVERED);
+        shipment.setLastUpdatedDate(LocalDateTime.now());
+
+        salesOrderRepository.save(order);
+        Shipment updatedShipment = shipmentRepository.save(shipment);
+
+        return shipmentMapper.toDto(updatedShipment);
+    }
 }
