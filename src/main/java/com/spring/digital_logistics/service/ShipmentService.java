@@ -21,12 +21,13 @@ public class ShipmentService {
     private final ShipmentRepository shipmentRepository;
     private final SalesOrderRepository salesOrderRepository;
     private final ShipmentMapper shipmentMapper;
+    private final InventoryService inventoryService;
 
-
-    public ShipmentService(ShipmentRepository shipmentRepository, SalesOrderRepository salesOrderRepository, ShipmentMapper shipmentMapper) {
+    public ShipmentService(ShipmentRepository shipmentRepository, SalesOrderRepository salesOrderRepository, ShipmentMapper shipmentMapper, InventoryService inventoryService) {
         this.shipmentRepository = shipmentRepository;
         this.salesOrderRepository = salesOrderRepository;
         this.shipmentMapper = shipmentMapper;
+        this.inventoryService = inventoryService;
     }
 
     @Transactional
@@ -53,5 +54,30 @@ public class ShipmentService {
         salesOrderRepository.save(order);
 
         return shipmentMapper.toDto(savedShipment);
+    }
+
+    @Transactional
+    public ShipmentDTO shipOrder(Long orderId){
+        SalesOrder order = salesOrderRepository.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Commande non trouvée avec l'ID: " + orderId));
+
+        Shipment shipment = order.getShipment();
+        if (shipment == null) {
+            throw new IllegalStateException("Cette commande n'a pas d'expédition planifiée.");
+        }
+
+        if (order.getStatus() != SalesOrderStatus.RESERVED || shipment.getStatus() != ShipmentStatus.PLANNED) {
+            throw new IllegalStateException("L'expédition ne peut être lancée que si la commande est RESERVED et l'expédition PLANNED.");
+        }
+
+        inventoryService.recordOutboundMovementForOrder(order);
+
+        order.setStatus(SalesOrderStatus.SHIPPED);
+        shipment.setStatus(ShipmentStatus.IN_TRANSIT);
+        shipment.setLastUpdatedDate(LocalDateTime.now());
+
+        salesOrderRepository.save(order);
+        Shipment updatedShipment = shipmentRepository.save(shipment);
+
+        return shipmentMapper.toDto(updatedShipment);
     }
 }

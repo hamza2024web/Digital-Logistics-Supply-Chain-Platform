@@ -182,4 +182,11 @@ public class AdminController {
         ShipmentDTO shipment = shipmentService.createAndPlanShipment(orderId, createDTO);
         return new ResponseEntity<>(shipment, HttpStatus.CREATED);
     }
+
+    @PatchMapping("/sales-orders/{orderId}/ship")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'WAREHOUSE_MANAGER')")
+    public ResponseEntity<ShipmentDTO> shipOrder(@PathVariable Long orderId) {
+        ShipmentDTO shipped = shipmentService.shipOrder(orderId);
+        return ResponseEntity.ok(shipped);
+    }
 }
