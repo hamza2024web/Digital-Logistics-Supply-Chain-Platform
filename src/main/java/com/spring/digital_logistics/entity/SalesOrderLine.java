@@ -26,6 +26,6 @@ public class SalesOrderLine {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    private int qty;
+    private int quantity;
     private BigDecimal price;
 }
