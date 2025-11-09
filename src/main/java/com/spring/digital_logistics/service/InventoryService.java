@@ -172,4 +172,40 @@ public class InventoryService {
         }
         log.info("Toutes les lignes de la commande #{} ont été réservées avec succès.", order.getId());
     }
+
+    @Transactional
+    public void recordOutboundMovementForOrder(SalesOrder order){
+        log.info("Enregistrement du mouvement OUTBOUND pour la commande #{}", order.getId());
+
+        for (SalesOrderLine line : order.getLines()){
+            Product product = line.getProduct();
+            Warehouse warehouse = line.getSalesOrder().getWarehouse();
+            int quantityToShip = line.getQuantity();
+
+            Inventory inventory = inventoryRepository.findByProductAndWarehouse(product, warehouse)
+                    .orElseThrow(() -> new IllegalStateException(String.format(
+                            "Erreur critique: Inventaire introuvable pour SKU %s lors de l'expédition.", product.getSku())));
+
+            if (inventory.getQtyOnHand() < quantityToShip || inventory.getQtyReserved() < quantityToShip) {
+                throw new IllegalStateException(String.format(
+                        "Incohérence de stock pour SKU %s. Stock < Quantité expédiée.", product.getSku()));
+            }
+
+            inventory.setQtyOnHand(inventory.getQtyOnHand() - quantityToShip);
+            inventory.setQtyReserved(inventory.getQtyReserved() - quantityToShip);
+
+            inventoryRepository.save(inventory);
+
+            InventoryMovement movement = new InventoryMovement();
+            movement.setProduct(product);
+            movement.setWarehouse(warehouse);
+            movement.setQty(quantityToShip);
+            movement.setType(MovementType.OUTBOUND);
+            movement.setOccurredAt(LocalDateTime.now());
+            inventoryMovementRepository.save(movement);
+
+            log.info("   -> [OUTBOUND] {} unités du SKU {} sorties de {}. Stock final: {} | Réservé final: {}",
+                    quantityToShip, product.getSku(), warehouse.getCode(), inventory.getQtyOnHand(), inventory.getQtyReserved());
+        }
+    }
 }
