@@ -1,13 +1,14 @@
 package com.spring.digital_logistics.controller;
 
 import com.spring.digital_logistics.dto.request.purchase.PurchaseOrderCreateDTO;
+import com.spring.digital_logistics.dto.request.shipment.ShipmentCreateDTO;
 import com.spring.digital_logistics.dto.request.supplier.SupplierCreateDTO;
 import com.spring.digital_logistics.dto.request.user.AdminUserCreateDTO;
 import com.spring.digital_logistics.dto.request.product.ProductCreateDTO;
 import com.spring.digital_logistics.dto.request.warehouse.WarehouseCreateDTO;
 import com.spring.digital_logistics.dto.response.product.ProductDTO;
 import com.spring.digital_logistics.dto.response.purchase.PurchaseOrderDTO;
-import com.spring.digital_logistics.dto.response.purchase.PurchaseOrderLineDTO;
+import com.spring.digital_logistics.dto.response.shipment.ShipmentDTO;
 import com.spring.digital_logistics.dto.response.supplier.SupplierDTO;
 import com.spring.digital_logistics.dto.response.user.UserDTO;
 import com.spring.digital_logistics.dto.response.warehouse.WarehouseDTO;
@@ -30,13 +31,15 @@ public class AdminController {
     private final ProductService productService;
     private final SupplierService supplierService;
     private final PurchaseOrderService purchaseOrderService;
+    private final ShipmentService shipmentService;
 
-    public AdminController(UserService userService, WarehouseService warehouseService, ProductService productService, SupplierService supplierService, PurchaseOrderService purchaseOrderService){
+    public AdminController(UserService userService, WarehouseService warehouseService, ProductService productService, SupplierService supplierService, PurchaseOrderService purchaseOrderService, ShipmentService shipmentService){
         this.userService = userService;
         this.warehouseService = warehouseService;
         this.productService = productService;
         this.supplierService = supplierService;
         this.purchaseOrderService = purchaseOrderService;
+        this.shipmentService = shipmentService;
     }
 
     @Operation(summary = "Obtenir Tous les Utilisateurs")
@@ -173,4 +176,10 @@ public class AdminController {
         return ResponseEntity.ok(updateOrder);
     }
 
+    @PostMapping("/sales-orders/{orderId}/shipments")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'WAREHOUSE_MANAGER')")
+    public ResponseEntity<ShipmentDTO> createShipmentForOrder(@PathVariable Long orderId, @Valid @RequestBody ShipmentCreateDTO createDTO) {
+        ShipmentDTO shipment = shipmentService.createAndPlanShipment(orderId, createDTO);
+        return new ResponseEntity<>(shipment, HttpStatus.CREATED);
+    }
 }

@@ -16,14 +16,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 
 @Service
-public class shipmentService {
+public class ShipmentService {
 
     private final ShipmentRepository shipmentRepository;
     private final SalesOrderRepository salesOrderRepository;
     private final ShipmentMapper shipmentMapper;
 
 
-    public shipmentService(ShipmentRepository shipmentRepository, SalesOrderRepository salesOrderRepository, ShipmentMapper shipmentMapper) {
+    public ShipmentService(ShipmentRepository shipmentRepository, SalesOrderRepository salesOrderRepository, ShipmentMapper shipmentMapper) {
         this.shipmentRepository = shipmentRepository;
         this.salesOrderRepository = salesOrderRepository;
         this.shipmentMapper = shipmentMapper;
