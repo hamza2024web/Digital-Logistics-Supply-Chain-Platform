@@ -43,7 +43,7 @@ public class shipmentService {
 
         Shipment shipment = new Shipment();
         shipment.setTrackingNumber(createDTO.getTrackingNumber());
-        shipment.setStatus(ShipmentStatus.PLANNED); // Statut initial selon US10
+        shipment.setStatus(ShipmentStatus.PLANNED);
         shipment.setCreationDate(LocalDateTime.now());
         shipment.setLastUpdatedDate(LocalDateTime.now());
 
