@@ -22,12 +22,14 @@ public class SalesOrderService {
     private final ProductRepository productRepository;
     private final WarehouseRepository warehouseRepository;
     private final SalesOrderMapper salesOrderMapper;
+    private final InventoryService inventoryService;
 
-    public SalesOrderService(SalesOrderRepository salesOrderRepository, ProductRepository productRepository, WarehouseRepository warehouseRepository, SalesOrderMapper salesOrderMapper) {
+    public SalesOrderService(SalesOrderRepository salesOrderRepository, ProductRepository productRepository, WarehouseRepository warehouseRepository, SalesOrderMapper salesOrderMapper, InventoryService inventoryService) {
         this.salesOrderRepository = salesOrderRepository;
         this.productRepository = productRepository;
         this.warehouseRepository = warehouseRepository;
         this.salesOrderMapper = salesOrderMapper;
+        this.inventoryService = inventoryService;
     }
 
     @Transactional
@@ -54,6 +56,26 @@ public class SalesOrderService {
         }
 
         SalesOrder savedOrder = salesOrderRepository.save(salesOrder);
+
+        return salesOrderMapper.toDto(savedOrder);
+    }
+
+    @Transactional
+    public SalesOrderDTO reserveOrderStock(Long orderId , User client){
+        SalesOrder order = salesOrderRepository.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Commande non trouvé avec l'ID : " + orderId));
+
+        if (!order.getClient().getId().equals(client.getId())){
+            throw new SecurityException("Vous n'êtes pas autorisé à modifier cette commande.");
+        }
+
+        if (order.getStatus() != SalesOrderStatus.CREATED){
+            throw new IllegalStateException("Seule une commande avec le statut CREATED peut être réservée. Statut actuel: " + order.getStatus());
+        }
+
+        inventoryService.reserveStockForOrder(order);
+
+        order.setStatus(SalesOrderStatus.RESERVED);
+        SalesOrder savedOrder = salesOrderRepository.save(order);
 
         return salesOrderMapper.toDto(savedOrder);
     }

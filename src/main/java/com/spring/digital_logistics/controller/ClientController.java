@@ -9,10 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/client")
@@ -29,5 +26,12 @@ public class ClientController {
     public ResponseEntity<SalesOrderDTO> createSalesOrder(@Valid @RequestBody SalesOrderCreateDTO createDTO , @AuthenticationPrincipal User currentUser){
         SalesOrderDTO newOrder = salesOrderService.createOrder(createDTO , currentUser);
         return new ResponseEntity<>(newOrder , HttpStatus.CREATED);
+    }
+
+    @PatchMapping("/orders/{orderId}/reserve")
+    @PreAuthorize("hasAuthority('CLIENT')")
+    public ResponseEntity<SalesOrderDTO> reserveOrderStock(@PathVariable Long orderId, @AuthenticationPrincipal User currentUser) {
+        SalesOrderDTO reservedOrder = salesOrderService.reserveOrderStock(orderId, currentUser);
+        return ResponseEntity.ok(reservedOrder);
     }
 }
