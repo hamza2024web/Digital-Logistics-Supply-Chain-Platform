@@ -17,7 +17,4 @@ public class SalesOrderLineCreateDTO {
     @Positive(message = "La quantity doit étre supérieure à zéro")
     private Integer quantity;
 
-    @NotNull(message = "Le prix est obligatoire")
-    @DecimalMin(value = "0.0", inclusive = false, message = "Le prix doit étre supérieur à zéro")
-    private BigDecimal price;
 }
