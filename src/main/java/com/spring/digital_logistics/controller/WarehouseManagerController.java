@@ -3,6 +3,7 @@ package com.spring.digital_logistics.controller;
 import com.spring.digital_logistics.dto.request.adjustement.AdjustmentRequestDTO;
 import com.spring.digital_logistics.dto.request.inventory.MovementRequestDTO;
 import com.spring.digital_logistics.dto.response.inventory.InventoryDTO;
+import com.spring.digital_logistics.dto.response.purchase.PurchaseOrderDTO;
 import com.spring.digital_logistics.entity.User;
 import com.spring.digital_logistics.service.InventoryService;
 import com.spring.digital_logistics.service.PurchaseOrderService;
@@ -32,8 +33,8 @@ public class WarehouseManagerController {
 
     @PostMapping("/inventory/{purchase_id}/inbound")
     @PreAuthorize("hasAuthority('WAREHOUSE_MANAGER')")
-    public ResponseEntity<InventoryDTO> recordInbound(@Valid @PathVariable Long purchase_id,@AuthenticationPrincipal User warehouse){
-        InventoryDTO updatedInventory = purchaseOrderService.receiveOrder(purchase_id,warehouse);
+    public ResponseEntity<PurchaseOrderDTO> recordInbound(@Valid @PathVariable Long purchase_id, @AuthenticationPrincipal User warehouse){
+        PurchaseOrderDTO updatedInventory = purchaseOrderService.receiveOrder(purchase_id,warehouse);
         return ResponseEntity.ok(updatedInventory);
     }
 

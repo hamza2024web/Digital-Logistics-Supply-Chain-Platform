@@ -4,5 +4,6 @@ public enum PurchaseOrderStatus {
     PENDING,
     SENT,
     RECEIVED,
+    COMPLETED,
     CANCELLED
 }

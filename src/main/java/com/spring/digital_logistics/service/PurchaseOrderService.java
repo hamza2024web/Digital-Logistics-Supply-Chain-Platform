@@ -85,7 +85,7 @@ public class PurchaseOrderService {
     }
 
     @Transactional
-    public void receiveOrder(Long purchaseOrderId , User warehouseUser){
+    public PurchaseOrderDTO receiveOrder(Long purchaseOrderId , User warehouseUser){
 
         if (warehouseUser.getRole() != Role.WAREHOUSE_MANAGER){
             throw new SecurityException("Vous n'étes pas autorisé de faire cette action");
@@ -110,5 +110,9 @@ public class PurchaseOrderService {
                 line.setQuantityReceived(line.getQuantity());
             }
         }
+        order.setStatus(PurchaseOrderStatus.COMPLETED);
+        PurchaseOrder savedOrder = purchaseOrderRepository.save(order);
+
+        return purchaseOrderMapper.toDto(savedOrder);
     }
 }
