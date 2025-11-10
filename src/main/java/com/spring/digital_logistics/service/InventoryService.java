@@ -159,9 +159,7 @@ public class InventoryService {
             if (availableStock < quantityToReserve){
                 log.warn("Stock insuffisant pour le produit SKU {} ! Disponible: {}, Demandé: {}",product.getSku(),availableStock,quantityToReserve);
 
-                throw new IllegalStateException(String.format(
-                        "Stock insuffisant pour le produit SKU %s. Quantité disponible: %d, Quantité demandée: %d",
-                        product.getSku(), availableStock, quantityToReserve));
+                throw new IllegalStateException(String.format("Stock insuffisant pour le produit SKU %s. Quantité disponible: %d, Quantité demandée: %d", product.getSku(), availableStock, quantityToReserve));
             }
 
             inventory.setQtyReserved(inventory.getQtyReserved() + quantityToReserve);

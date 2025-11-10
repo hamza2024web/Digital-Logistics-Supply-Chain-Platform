@@ -1,5 +1,6 @@
 package com.spring.digital_logistics.dto.response.salesOrder;
 
+import com.spring.digital_logistics.entity.enums.SalesOrderLineStatus;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -11,4 +12,6 @@ public class SalesOrderLineDTO {
     private String productSku;
     private int quantity;
     private BigDecimal price;
+
+    private SalesOrderLineStatus status;
 }
