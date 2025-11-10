@@ -171,6 +171,8 @@ public class InventoryService {
                     product.getSku(), quantityToReserve, inventory.getQtyReserved());
         }
         log.info("Toutes les lignes de la commande #{} ont été réservées avec succès.", order.getId());
+
+        return allLineFullyReserved;
     }
 
     @Transactional

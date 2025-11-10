@@ -13,7 +13,7 @@ public interface SalesOrderMapper {
     SalesOrderMapper INSTANCE = Mappers.getMapper(SalesOrderMapper.class);
 
     @Mapping(source = "client.id", target = "clientId")
-    @Mapping(source = "client.last_name", target = "clientUsername")
+    @Mapping(source = "client.lastName", target = "clientUsername")
     @Mapping(source = "warehouse.id", target = "warehouseId")
     @Mapping(source = "warehouse.code", target = "warehouseCode")
     SalesOrderDTO toDto(SalesOrder salesOrder);
