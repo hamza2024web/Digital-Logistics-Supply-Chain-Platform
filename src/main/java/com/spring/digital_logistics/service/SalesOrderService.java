@@ -4,6 +4,7 @@ import com.spring.digital_logistics.dto.request.salesOrder.SalesOrderCreateDTO;
 import com.spring.digital_logistics.dto.request.salesOrder.SalesOrderLineCreateDTO;
 import com.spring.digital_logistics.dto.response.salesOrder.SalesOrderDTO;
 import com.spring.digital_logistics.entity.*;
+import com.spring.digital_logistics.entity.enums.SalesOrderLineStatus;
 import com.spring.digital_logistics.entity.enums.SalesOrderStatus;
 import com.spring.digital_logistics.exception.ResourceNotFoundException;
 import com.spring.digital_logistics.mapper.SalesOrderMapper;
@@ -53,6 +54,7 @@ public class SalesOrderService {
             SalesOrderLine line = new SalesOrderLine();
             line.setProduct(product);
             line.setQuantity(lineDTO.getQuantity());
+            line.setStatus(SalesOrderLineStatus.CREATED);
 
             salesOrder.addLine(line);
         }
@@ -74,9 +76,14 @@ public class SalesOrderService {
             throw new IllegalStateException("Seule une commande avec le statut CREATED peut être réservée. Statut actuel: " + order.getStatus());
         }
 
-        inventoryService.reserveStockForOrder(order);
+        boolean allLineFullyReserved = inventoryService.reserveStockForOrder(order);
 
-        order.setStatus(SalesOrderStatus.RESERVED);
+        if(allLineFullyReserved){
+            order.setStatus(SalesOrderStatus.RESERVED);
+        } else {
+            order.setStatus(SalesOrderStatus.PARTIALLY_RESERVED);
+        }
+
         SalesOrder savedOrder = salesOrderRepository.save(order);
 
         return salesOrderMapper.toDto(savedOrder);

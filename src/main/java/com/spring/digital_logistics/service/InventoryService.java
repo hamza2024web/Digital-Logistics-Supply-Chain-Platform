@@ -5,6 +5,7 @@ import com.spring.digital_logistics.dto.request.inventory.MovementRequestDTO;
 import com.spring.digital_logistics.dto.response.inventory.InventoryDTO;
 import com.spring.digital_logistics.entity.*;
 import com.spring.digital_logistics.entity.enums.MovementType;
+import com.spring.digital_logistics.entity.enums.SalesOrderLineStatus;
 import com.spring.digital_logistics.exception.ResourceNotFoundException;
 import com.spring.digital_logistics.exception.StockUnavailableException;
 import com.spring.digital_logistics.mapper.InventoryMapper;
@@ -142,7 +143,8 @@ public class InventoryService {
     }
 
     @Transactional
-    public void reserveStockForOrder(SalesOrder order){
+    public boolean reserveStockForOrder(SalesOrder order){
+        boolean allLineFullyReserved = true;
 
         for (SalesOrderLine line : order.getLines()){
             Product product = line.getProduct();
@@ -150,20 +152,20 @@ public class InventoryService {
             int quantityToReserve = line.getQuantity();
 
             Inventory inventory = inventoryRepository.findByProductAndWarehouse(product,warehouse)
-                    .orElseThrow(() -> new IllegalStateException(String.format(
-                            "Aucun inventaire trouvé pour le produit SKU %s dans l'entrepôt %s. Réservation impossible.",
-                            product.getSku(), warehouse.getCode())));
+                    .orElseThrow(() -> new IllegalStateException(String.format("Aucun inventaire trouvé pour le produit SKU %s dans l'entrepôt %s. Réservation impossible.", product.getSku(), warehouse.getCode())));
 
             int availableStock = inventory.getQtyOnHand() - inventory.getQtyReserved();
 
-            if (availableStock < quantityToReserve){
-                log.warn("Stock insuffisant pour le produit SKU {} ! Disponible: {}, Demandé: {}",product.getSku(),availableStock,quantityToReserve);
+            if (availableStock > quantityToReserve){
+                inventory.setQtyReserved(inventory.getQtyReserved() + quantityToReserve);
+                inventoryRepository.save(inventory);
+                line.setStatus(SalesOrderLineStatus.RESERVED);
 
-                throw new IllegalStateException(String.format("Stock insuffisant pour le produit SKU %s. Quantité disponible: %d, Quantité demandée: %d", product.getSku(), availableStock, quantityToReserve));
+            } else {
+                allLineFullyReserved = false;
+                line.setStatus(SalesOrderLineStatus.BACKORDERED);
             }
 
-            inventory.setQtyReserved(inventory.getQtyReserved() + quantityToReserve);
-            inventoryRepository.save(inventory);
 
             log.info("Stock réservé pour le produit SKU {}: {} unités. Nouveau total réservé: {}",
                     product.getSku(), quantityToReserve, inventory.getQtyReserved());
