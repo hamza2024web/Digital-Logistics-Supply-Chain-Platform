@@ -44,4 +44,9 @@ public class GlobalExceptionHandler{
     public ResponseEntity<String> handlePurchaseOrderStatusException(PurchaseOrderStatusException ex){
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
+
+    @ExceptionHandler(BussinessException.class)
+    public ResponseEntity<String> handleBussinessException(BussinessException ex){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
 }

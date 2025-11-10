@@ -12,15 +12,18 @@ import com.spring.digital_logistics.dto.response.shipment.ShipmentDTO;
 import com.spring.digital_logistics.dto.response.supplier.SupplierDTO;
 import com.spring.digital_logistics.dto.response.user.UserDTO;
 import com.spring.digital_logistics.dto.response.warehouse.WarehouseDTO;
+import com.spring.digital_logistics.entity.User;
 import com.spring.digital_logistics.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -195,5 +198,12 @@ public class AdminController {
     public ResponseEntity<ShipmentDTO> deliverOrder(@PathVariable Long orderId) {
         ShipmentDTO delivered = shipmentService.deliverOrder(orderId);
         return ResponseEntity.ok(delivered);
+    }
+
+    @PatchMapping("/products/{sku}/desactiver")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<Optional<ProductDTO>> desactivateProduct(@PathVariable String sku , @AuthenticationPrincipal User admin){
+        Optional<ProductDTO> desactivateProduct = productService.desactivateProduct(sku,admin);
+        return ResponseEntity.ok(desactivateProduct);
     }
 }
