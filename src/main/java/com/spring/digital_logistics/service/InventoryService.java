@@ -24,19 +24,15 @@ public class InventoryService {
     private final WarehouseRepository warehouseRepository;
     private final InventoryRepository inventoryRepository;
     private final InventoryMovementRepository inventoryMovementRepository;
-    private final PurchaseOrderRepository purchaseOrderRepository;
-    private final PurchaseOrderLineRepository purchaseOrderLineRepository;
     private final InventoryMapper inventoryMapper;
     private static final Logger log = LoggerFactory.getLogger(InventoryService.class);
 
 
-    public InventoryService(ProductRepository productRepository, WarehouseRepository warehouseRepository, InventoryRepository inventoryRepository, InventoryMovementRepository inventoryMovementRepository, PurchaseOrderRepository purchaseOrderRepository, PurchaseOrderLineRepository purchaseOrderLineRepository, InventoryMapper inventoryMapper) {
+    public InventoryService(ProductRepository productRepository, WarehouseRepository warehouseRepository, InventoryRepository inventoryRepository, InventoryMovementRepository inventoryMovementRepository, InventoryMapper inventoryMapper) {
         this.productRepository = productRepository;
         this.warehouseRepository = warehouseRepository;
         this.inventoryRepository = inventoryRepository;
         this.inventoryMovementRepository = inventoryMovementRepository;
-        this.purchaseOrderRepository = purchaseOrderRepository;
-        this.purchaseOrderLineRepository = purchaseOrderLineRepository;
         this.inventoryMapper = inventoryMapper;
     }
 
@@ -185,12 +181,10 @@ public class InventoryService {
             int quantityToShip = line.getQuantity();
 
             Inventory inventory = inventoryRepository.findByProductAndWarehouse(product, warehouse)
-                    .orElseThrow(() -> new IllegalStateException(String.format(
-                            "Erreur critique: Inventaire introuvable pour SKU %s lors de l'expédition.", product.getSku())));
+                    .orElseThrow(() -> new IllegalStateException(String.format("Erreur critique: Inventaire introuvable pour SKU %s lors de l'expédition.", product.getSku())));
 
             if (inventory.getQtyOnHand() < quantityToShip || inventory.getQtyReserved() < quantityToShip) {
-                throw new IllegalStateException(String.format(
-                        "Incohérence de stock pour SKU %s. Stock < Quantité expédiée.", product.getSku()));
+                throw new IllegalStateException(String.format("Incohérence de stock pour SKU %s. Stock < Quantité expédiée.", product.getSku()));
             }
 
             inventory.setQtyOnHand(inventory.getQtyOnHand() - quantityToShip);
@@ -206,8 +200,7 @@ public class InventoryService {
             movement.setOccurredAt(LocalDateTime.now());
             inventoryMovementRepository.save(movement);
 
-            log.info("   -> [OUTBOUND] {} unités du SKU {} sorties de {}. Stock final: {} | Réservé final: {}",
-                    quantityToShip, product.getSku(), warehouse.getCode(), inventory.getQtyOnHand(), inventory.getQtyReserved());
+            log.info("   -> [OUTBOUND] {} unités du SKU {} sorties de {}. Stock final: {} | Réservé final: {}", quantityToShip, product.getSku(), warehouse.getCode(), inventory.getQtyOnHand(), inventory.getQtyReserved());
         }
     }
 }
