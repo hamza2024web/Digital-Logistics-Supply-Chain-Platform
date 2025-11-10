@@ -1,5 +1,6 @@
 package com.spring.digital_logistics.entity;
 
+import com.spring.digital_logistics.entity.enums.SalesOrderLineStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,4 +29,8 @@ public class SalesOrderLine {
 
     private int quantity;
     private BigDecimal price;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private SalesOrderLineStatus status;
 }

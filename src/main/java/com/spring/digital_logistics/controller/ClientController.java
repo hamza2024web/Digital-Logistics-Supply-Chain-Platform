@@ -2,6 +2,7 @@ package com.spring.digital_logistics.controller;
 
 import com.spring.digital_logistics.dto.request.salesOrder.SalesOrderCreateDTO;
 import com.spring.digital_logistics.dto.response.salesOrder.SalesOrderDTO;
+import com.spring.digital_logistics.entity.SalesOrder;
 import com.spring.digital_logistics.entity.User;
 import com.spring.digital_logistics.service.SalesOrderService;
 import jakarta.validation.Valid;
@@ -10,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/client")
@@ -33,5 +36,19 @@ public class ClientController {
     public ResponseEntity<SalesOrderDTO> reserveOrderStock(@PathVariable Long orderId, @AuthenticationPrincipal User currentUser) {
         SalesOrderDTO reservedOrder = salesOrderService.reserveOrderStock(orderId, currentUser);
         return ResponseEntity.ok(reservedOrder);
+    }
+
+    @GetMapping("/orders")
+    @PreAuthorize("hasAuthority('CLIENT')")
+    public ResponseEntity<List<SalesOrderDTO>> getOrders(@AuthenticationPrincipal User client){
+        List<SalesOrderDTO> orders = salesOrderService.getMyOrder(client);
+        return ResponseEntity.ok(orders);
+    }
+
+    @GetMapping("/orders/{orderId}")
+    @PreAuthorize("hasAuthority('CLIENT')")
+    public ResponseEntity<SalesOrderDTO> getOrderById(@PathVariable Long orderId , @AuthenticationPrincipal User client){
+        SalesOrderDTO order = salesOrderService.getOrder(orderId,client);
+        return ResponseEntity.ok(order);
     }
 }

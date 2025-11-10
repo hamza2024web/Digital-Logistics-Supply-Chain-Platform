@@ -1,10 +1,13 @@
 package com.spring.digital_logistics.service;
 
+import com.spring.digital_logistics.dto.request.inventory.MovementRequestDTO;
 import com.spring.digital_logistics.dto.request.purchase.PurchaseOrderCreateDTO;
 import com.spring.digital_logistics.dto.request.purchase.PurchaseOrderLineCreateDTO;
 import com.spring.digital_logistics.dto.response.purchase.PurchaseOrderDTO;
 import com.spring.digital_logistics.entity.*;
 import com.spring.digital_logistics.entity.enums.PurchaseOrderStatus;
+import com.spring.digital_logistics.entity.enums.Role;
+import com.spring.digital_logistics.exception.PurchaseOrderStatusException;
 import com.spring.digital_logistics.exception.ResourceNotFoundException;
 import com.spring.digital_logistics.mapper.PurchaseOrderMapper;
 import com.spring.digital_logistics.repository.ProductRepository;
@@ -25,13 +28,15 @@ public class PurchaseOrderService {
     private final WarehouseRepository warehouseRepository;
     private final ProductRepository productRepository;
     private final PurchaseOrderMapper purchaseOrderMapper;
+    private final InventoryService inventoryService;
 
-    public PurchaseOrderService(PurchaseOrderRepository purchaseOrderRepository, SupplierRepository supplierRepository, WarehouseRepository warehouseRepository, ProductRepository productRepository, PurchaseOrderMapper purchaseOrderMapper){
+    public PurchaseOrderService(PurchaseOrderRepository purchaseOrderRepository, SupplierRepository supplierRepository, WarehouseRepository warehouseRepository, ProductRepository productRepository, PurchaseOrderMapper purchaseOrderMapper, InventoryService inventoryService){
         this.purchaseOrderRepository = purchaseOrderRepository;
         this.supplierRepository = supplierRepository;
         this.warehouseRepository = warehouseRepository;
         this.productRepository = productRepository;
         this.purchaseOrderMapper = purchaseOrderMapper;
+        this.inventoryService = inventoryService;
     }
 
     public PurchaseOrderDTO createPurchaseOrder(PurchaseOrderCreateDTO createDTO){
@@ -77,5 +82,37 @@ public class PurchaseOrderService {
 
         PurchaseOrder savedPurchase = purchaseOrderRepository.save(purchaseOrder);
         return purchaseOrderMapper.toDto(savedPurchase);
+    }
+
+    @Transactional
+    public PurchaseOrderDTO receiveOrder(Long purchaseOrderId , User warehouseUser){
+
+        if (warehouseUser.getRole() != Role.WAREHOUSE_MANAGER){
+            throw new SecurityException("Vous n'étes pas autorisé de faire cette action");
+        }
+
+        PurchaseOrder order = purchaseOrderRepository.findById(purchaseOrderId).orElseThrow(() -> new ResourceNotFoundException("Purchase Order non trouvé avec L'ID : " + purchaseOrderId));
+
+        if (order.getStatus() != PurchaseOrderStatus.RECEIVED){
+            throw new PurchaseOrderStatusException("Cette commande n'est pas en attente de réception. Statut actuel: " + order.getStatus());
+        }
+
+        for (PurchaseOrderLine line : order.getLines()){
+            if (line.getQuantityReceived() < line.getQuantity()){
+
+                MovementRequestDTO inboundInstruction = new MovementRequestDTO();
+                inboundInstruction.setProductId(line.getProduct().getId());
+                inboundInstruction.setWarehouseId(order.getDestinationWarehouse().getId());
+                inboundInstruction.setQuantity(line.getQuantity());
+
+                inventoryService.recordInboundMovement(inboundInstruction);
+
+                line.setQuantityReceived(line.getQuantity());
+            }
+        }
+        order.setStatus(PurchaseOrderStatus.COMPLETED);
+        PurchaseOrder savedOrder = purchaseOrderRepository.save(order);
+
+        return purchaseOrderMapper.toDto(savedOrder);
     }
 }

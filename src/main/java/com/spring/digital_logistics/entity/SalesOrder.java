@@ -35,6 +35,10 @@ public class SalesOrder {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "shipment_id", referencedColumnName = "id")
+    private Shipment shipment;
+
     @OneToMany(mappedBy = "salesOrder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SalesOrderLine> lines = new ArrayList<>();
 

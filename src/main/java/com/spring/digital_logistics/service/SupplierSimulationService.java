@@ -47,8 +47,6 @@ public class SupplierSimulationService {
                 inboundMovement.setWarehouseId(line.getPurchaseOrder().getDestinationWarehouse().getId());
                 inboundMovement.setQuantity(line.getQuantity());
 
-                inventoryService.recordInboundMovement(inboundMovement);
-
                 log.info("    -> [INVENTORY] +{} unités du produit SKU {} ajoutées à l'entrepôt {}.", line.getQuantity() , line.getProduct().getSku() , order.getDestinationWarehouse().getCode());
             }
 

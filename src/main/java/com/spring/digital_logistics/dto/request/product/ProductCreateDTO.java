@@ -16,7 +16,6 @@ public class ProductCreateDTO {
 
     private String image;
     private BigDecimal price;
-    private String unit;
 
     @NotNull(message = "Le Statut actif ne doit pas étre vide")
     private boolean active;
