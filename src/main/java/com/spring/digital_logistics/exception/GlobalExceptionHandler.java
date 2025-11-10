@@ -39,4 +39,9 @@ public class GlobalExceptionHandler{
     public ResponseEntity<String> handleStockUnavailable(StockUnavailableException ex){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
+
+    @ExceptionHandler(PurchaseOrderStatusException.class)
+    public ResponseEntity<String> handlePurchaseOrderStatusException(PurchaseOrderStatusException ex){
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+    }
 }

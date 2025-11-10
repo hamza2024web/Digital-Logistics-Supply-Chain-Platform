@@ -9,10 +9,7 @@ import com.spring.digital_logistics.entity.enums.SalesOrderLineStatus;
 import com.spring.digital_logistics.exception.ResourceNotFoundException;
 import com.spring.digital_logistics.exception.StockUnavailableException;
 import com.spring.digital_logistics.mapper.InventoryMapper;
-import com.spring.digital_logistics.repository.InventoryMovementRepository;
-import com.spring.digital_logistics.repository.InventoryRepository;
-import com.spring.digital_logistics.repository.ProductRepository;
-import com.spring.digital_logistics.repository.WarehouseRepository;
+import com.spring.digital_logistics.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -27,21 +24,24 @@ public class InventoryService {
     private final WarehouseRepository warehouseRepository;
     private final InventoryRepository inventoryRepository;
     private final InventoryMovementRepository inventoryMovementRepository;
+    private final PurchaseOrderRepository purchaseOrderRepository;
+    private final PurchaseOrderLineRepository purchaseOrderLineRepository;
     private final InventoryMapper inventoryMapper;
     private static final Logger log = LoggerFactory.getLogger(InventoryService.class);
 
 
-    public InventoryService(ProductRepository productRepository, WarehouseRepository warehouseRepository, InventoryRepository inventoryRepository, InventoryMovementRepository inventoryMovementRepository, InventoryMapper inventoryMapper) {
+    public InventoryService(ProductRepository productRepository, WarehouseRepository warehouseRepository, InventoryRepository inventoryRepository, InventoryMovementRepository inventoryMovementRepository, PurchaseOrderRepository purchaseOrderRepository, PurchaseOrderLineRepository purchaseOrderLineRepository, InventoryMapper inventoryMapper) {
         this.productRepository = productRepository;
         this.warehouseRepository = warehouseRepository;
         this.inventoryRepository = inventoryRepository;
         this.inventoryMovementRepository = inventoryMovementRepository;
+        this.purchaseOrderRepository = purchaseOrderRepository;
+        this.purchaseOrderLineRepository = purchaseOrderLineRepository;
         this.inventoryMapper = inventoryMapper;
     }
 
     @Transactional
     public InventoryDTO recordInboundMovement(MovementRequestDTO movementRequest){
-
         Product product = productRepository.findById(movementRequest.getProductId()).orElseThrow(() -> new ResourceNotFoundException("Produit non trouvé avec L'ID : " + movementRequest.getProductId()));
 
         Warehouse warehouse = warehouseRepository.findById(movementRequest.getWarehouseId()).orElseThrow(() -> new ResourceNotFoundException("Entrepôt non trouvé avec l'ID: " + movementRequest.getWarehouseId()));
