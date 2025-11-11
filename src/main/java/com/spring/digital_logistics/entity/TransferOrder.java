@@ -41,4 +41,13 @@ public class TransferOrder {
     private LocalDateTime creationDate;
 
     private LocalDateTime completionDate;
+
+    public TransferOrder(Product product , Warehouse sourceWarehouse , Warehouse destinationWarehouse , int quantity , TransferStatus status , LocalDateTime creationDate){
+        this.product = product;
+        this.sourceWarehouse = sourceWarehouse;
+        this.destinationWarehouse = destinationWarehouse;
+        this.quantity = quantity;
+        this.status = status;
+        this.creationDate = creationDate;
+    }
 }
