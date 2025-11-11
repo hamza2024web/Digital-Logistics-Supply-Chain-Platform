@@ -29,4 +29,11 @@ public class Inventory {
     private int qtyOnHand;
 
     private int qtyReserved;
+
+    public Inventory(Product product, Warehouse warehouse, int qtyOnHand, int qtyReserved) {
+        this.product = product;
+        this.warehouse = warehouse;
+        this.qtyOnHand = qtyOnHand;
+        this.qtyReserved = qtyReserved;
+    }
 }

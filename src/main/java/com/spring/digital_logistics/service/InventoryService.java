@@ -24,19 +24,15 @@ public class InventoryService {
     private final WarehouseRepository warehouseRepository;
     private final InventoryRepository inventoryRepository;
     private final InventoryMovementRepository inventoryMovementRepository;
-    private final PurchaseOrderRepository purchaseOrderRepository;
-    private final PurchaseOrderLineRepository purchaseOrderLineRepository;
     private final InventoryMapper inventoryMapper;
     private static final Logger log = LoggerFactory.getLogger(InventoryService.class);
 
 
-    public InventoryService(ProductRepository productRepository, WarehouseRepository warehouseRepository, InventoryRepository inventoryRepository, InventoryMovementRepository inventoryMovementRepository, PurchaseOrderRepository purchaseOrderRepository, PurchaseOrderLineRepository purchaseOrderLineRepository, InventoryMapper inventoryMapper) {
+    public InventoryService(ProductRepository productRepository, WarehouseRepository warehouseRepository, InventoryRepository inventoryRepository, InventoryMovementRepository inventoryMovementRepository, InventoryMapper inventoryMapper) {
         this.productRepository = productRepository;
         this.warehouseRepository = warehouseRepository;
         this.inventoryRepository = inventoryRepository;
         this.inventoryMovementRepository = inventoryMovementRepository;
-        this.purchaseOrderRepository = purchaseOrderRepository;
-        this.purchaseOrderLineRepository = purchaseOrderLineRepository;
         this.inventoryMapper = inventoryMapper;
     }
 
@@ -144,6 +140,7 @@ public class InventoryService {
 
     @Transactional
     public boolean reserveStockForOrder(SalesOrder order){
+        log.info("Tentative de réservation de stock pour la commande #{}", order.getId());
         boolean allLineFullyReserved = true;
 
         for (SalesOrderLine line : order.getLines()){
@@ -152,25 +149,33 @@ public class InventoryService {
             int quantityToReserve = line.getQuantity();
 
             Inventory inventory = inventoryRepository.findByProductAndWarehouse(product,warehouse)
-                    .orElseThrow(() -> new IllegalStateException(String.format("Aucun inventaire trouvé pour le produit SKU %s dans l'entrepôt %s. Réservation impossible.", product.getSku(), warehouse.getCode())));
+                    .orElse(new Inventory(product,warehouse,0,0));
 
             int availableStock = inventory.getQtyOnHand() - inventory.getQtyReserved();
 
-            if (availableStock > quantityToReserve){
+            if (availableStock >= quantityToReserve){
+                log.info("   -> [OK] Stock suffisant pour SKU {}. Demandé: {}, Disponible: {}",
+                        product.getSku(), quantityToReserve, availableStock);
+
                 inventory.setQtyReserved(inventory.getQtyReserved() + quantityToReserve);
                 inventoryRepository.save(inventory);
+
                 line.setStatus(SalesOrderLineStatus.RESERVED);
 
             } else {
+                log.warn("   -> [!!] Stock INSUFFISANT pour SKU {}. Demandé: {}, Disponible: {}. Passage en backorder.",
+                        product.getSku(), quantityToReserve, availableStock);
+
                 allLineFullyReserved = false;
                 line.setStatus(SalesOrderLineStatus.BACKORDERED);
             }
-
-
-            log.info("Stock réservé pour le produit SKU {}: {} unités. Nouveau total réservé: {}",
-                    product.getSku(), quantityToReserve, inventory.getQtyReserved());
         }
-        log.info("Toutes les lignes de la commande #{} ont été réservées avec succès.", order.getId());
+
+        if(allLineFullyReserved) {
+            log.info("Réservation terminée pour la commande #{}. Toutes les lignes sont réservées.", order.getId());
+        } else {
+            log.warn("Réservation terminée pour la commande #{}. Une ou plusieurs lignes sont en backorder.", order.getId());
+        }
 
         return allLineFullyReserved;
     }
@@ -185,12 +190,10 @@ public class InventoryService {
             int quantityToShip = line.getQuantity();
 
             Inventory inventory = inventoryRepository.findByProductAndWarehouse(product, warehouse)
-                    .orElseThrow(() -> new IllegalStateException(String.format(
-                            "Erreur critique: Inventaire introuvable pour SKU %s lors de l'expédition.", product.getSku())));
+                    .orElseThrow(() -> new IllegalStateException(String.format("Erreur critique: Inventaire introuvable pour SKU %s lors de l'expédition.", product.getSku())));
 
             if (inventory.getQtyOnHand() < quantityToShip || inventory.getQtyReserved() < quantityToShip) {
-                throw new IllegalStateException(String.format(
-                        "Incohérence de stock pour SKU %s. Stock < Quantité expédiée.", product.getSku()));
+                throw new IllegalStateException(String.format("Incohérence de stock pour SKU %s. Stock < Quantité expédiée.", product.getSku()));
             }
 
             inventory.setQtyOnHand(inventory.getQtyOnHand() - quantityToShip);
@@ -206,8 +209,7 @@ public class InventoryService {
             movement.setOccurredAt(LocalDateTime.now());
             inventoryMovementRepository.save(movement);
 
-            log.info("   -> [OUTBOUND] {} unités du SKU {} sorties de {}. Stock final: {} | Réservé final: {}",
-                    quantityToShip, product.getSku(), warehouse.getCode(), inventory.getQtyOnHand(), inventory.getQtyReserved());
+            log.info("   -> [OUTBOUND] {} unités du SKU {} sorties de {}. Stock final: {} | Réservé final: {}", quantityToShip, product.getSku(), warehouse.getCode(), inventory.getQtyOnHand(), inventory.getQtyReserved());
         }
     }
 }

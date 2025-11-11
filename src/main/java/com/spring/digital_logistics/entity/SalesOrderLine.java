@@ -2,17 +2,17 @@ package com.spring.digital_logistics.entity;
 
 import com.spring.digital_logistics.entity.enums.SalesOrderLineStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "sales_order_line")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = "salesOrder")
 public class SalesOrderLine {
 
     @Id
