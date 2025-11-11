@@ -25,12 +25,6 @@ public class WarehouseManagerController {
         this.purchaseOrderService = purchaseOrderService;
     }
 
-    @GetMapping("/hello")
-    @PreAuthorize("hasAuthority('WAREHOUSE_MANAGER')")
-    public ResponseEntity<String> sayHelloWarehouseManager(){
-        return ResponseEntity.ok("Bonjour, Warehouse Manager ! Si vous voyez ce message, c'est que votre rôle est bien reconnu.");
-    }
-
     @PostMapping("/inventory/{purchase_id}/inbound")
     @PreAuthorize("hasAuthority('WAREHOUSE_MANAGER')")
     public ResponseEntity<PurchaseOrderDTO> recordInbound(@Valid @PathVariable Long purchase_id, @AuthenticationPrincipal User warehouse){

@@ -140,6 +140,7 @@ public class InventoryService {
 
     @Transactional
     public boolean reserveStockForOrder(SalesOrder order){
+        log.info("Tentative de réservation de stock pour la commande #{}", order.getId());
         boolean allLineFullyReserved = true;
 
         for (SalesOrderLine line : order.getLines()){
@@ -148,25 +149,33 @@ public class InventoryService {
             int quantityToReserve = line.getQuantity();
 
             Inventory inventory = inventoryRepository.findByProductAndWarehouse(product,warehouse)
-                    .orElseThrow(() -> new IllegalStateException(String.format("Aucun inventaire trouvé pour le produit SKU %s dans l'entrepôt %s. Réservation impossible.", product.getSku(), warehouse.getCode())));
+                    .orElse(new Inventory(product,warehouse,0,0));
 
             int availableStock = inventory.getQtyOnHand() - inventory.getQtyReserved();
 
-            if (availableStock > quantityToReserve){
+            if (availableStock >= quantityToReserve){
+                log.info("   -> [OK] Stock suffisant pour SKU {}. Demandé: {}, Disponible: {}",
+                        product.getSku(), quantityToReserve, availableStock);
+
                 inventory.setQtyReserved(inventory.getQtyReserved() + quantityToReserve);
                 inventoryRepository.save(inventory);
+
                 line.setStatus(SalesOrderLineStatus.RESERVED);
 
             } else {
+                log.warn("   -> [!!] Stock INSUFFISANT pour SKU {}. Demandé: {}, Disponible: {}. Passage en backorder.",
+                        product.getSku(), quantityToReserve, availableStock);
+
                 allLineFullyReserved = false;
                 line.setStatus(SalesOrderLineStatus.BACKORDERED);
             }
-
-
-            log.info("Stock réservé pour le produit SKU {}: {} unités. Nouveau total réservé: {}",
-                    product.getSku(), quantityToReserve, inventory.getQtyReserved());
         }
-        log.info("Toutes les lignes de la commande #{} ont été réservées avec succès.", order.getId());
+
+        if(allLineFullyReserved) {
+            log.info("Réservation terminée pour la commande #{}. Toutes les lignes sont réservées.", order.getId());
+        } else {
+            log.warn("Réservation terminée pour la commande #{}. Une ou plusieurs lignes sont en backorder.", order.getId());
+        }
 
         return allLineFullyReserved;
     }

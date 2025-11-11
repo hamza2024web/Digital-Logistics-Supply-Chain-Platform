@@ -74,7 +74,7 @@ class InventoryServiceTest {
         order.setWarehouse(warehouse);
         SalesOrderLine line = new SalesOrderLine();
         line.setProduct(product);
-        line.setQuantity(20);
+        line.setQuantity(10);
         order.addLine(line);
 
         Inventory inventory = new Inventory(product,warehouse,8,3);
