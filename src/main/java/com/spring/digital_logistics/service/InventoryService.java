@@ -211,5 +211,26 @@ public class InventoryService {
 
             log.info("   -> [OUTBOUND] {} unités du SKU {} sorties de {}. Stock final: {} | Réservé final: {}", quantityToShip, product.getSku(), warehouse.getCode(), inventory.getQtyOnHand(), inventory.getQtyReserved());
         }
+
+    }
+
+    public void shipStock(Product product,Warehouse sourceWarehouse,int quantity){
+        Inventory inventorySource = inventoryRepository.findByProductAndWarehouse(product,sourceWarehouse).orElseThrow(() -> new ResourceNotFoundException("inventorie non trouvé"));
+
+        int newQuantityOnHand =  inventorySource.getQtyOnHand() - quantity;
+        inventorySource.setQtyOnHand(newQuantityOnHand);
+
+        Inventory savedQuantity = inventoryRepository.save(inventorySource);
+
+    }
+
+    public void receiveStock(Product product,Warehouse destinationWarehouse,int quantity){
+        Inventory inventorydestination = inventoryRepository.findByProductAndWarehouse(product,destinationWarehouse).orElseThrow(() -> new ResourceNotFoundException("inventorie non trouvé"));
+
+        int newQuantityOnHand =  inventorydestination.getQtyOnHand() + quantity;
+        inventorydestination.setQtyOnHand(newQuantityOnHand);
+
+        Inventory savedQuantity = inventoryRepository.save(inventorydestination);
+
     }
 }
