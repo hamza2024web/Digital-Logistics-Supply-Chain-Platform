@@ -35,44 +35,79 @@ public class BackorderResolutionService {
         this.inventoryService = inventoryService;
     }
 
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 6000)
     @Transactional
-    public void attemptToResolveBackorders(int quantityToReserve){
-        log.info("Commence la recherche des commandes qu'on une status BACKORDER");
+    public void resolveBackordersAndAwaitingTransfers(){
+        log.info("--- [AGENT] Démarrage du cycle de résolution ---");
+        resolveAwaitingTransferLignes();
 
-        List<SalesOrderLine> orders = salesOrderLineRepository.findByStatus(SalesOrderLineStatus.BACKORDERED);
+        resolveBackorderedLines();
+        log.info("--- [AGENT] Fin du cycle de résolution ---");
+    }
 
-        for (SalesOrderLine order : orders){
-            Warehouse sourceWarehouse = order.getSalesOrder().getWarehouse();
-            Product product = order.getProduct();
+    private void resolveAwaitingTransferLignes(){
+        List<SalesOrderLine> awaitingLines = salesOrderLineRepository.findByStatus(SalesOrderLineStatus.AWAITING_TRANSFER);
+        if (awaitingLines.isEmpty()){
+            return;
+        }
 
-            Inventory inventory = inventoryRepository.findByProductAndWarehouse(product,sourceWarehouse).orElseThrow(() -> new ResourceNotFoundException("Inventory non trouvé"));
+        log.info("[AGENT] {} lignes en 'AWAITING_TRANSFER' trouvées. Tentative de réservation finale...", awaitingLines.size());
+        for (SalesOrderLine line : awaitingLines){
+            Product product = line.getProduct();
+            Warehouse destinationWarehouse = line.getSalesOrder().getWarehouse();
+            int quantityNeeded = line.getQuantity();
 
-            int availableStock = inventory.getQtyOnHand() - inventory.getQtyReserved();
+            Inventory localInventory = inventoryRepository.findByProductAndWarehouse(product,destinationWarehouse).orElse(new Inventory(product,destinationWarehouse,0,0));
+            int availableStock = localInventory.getQtyOnHand() - localInventory.getQtyReserved();
 
-            log.info("essayer de vérifier est ce que son warehouse il a la quantité suffisant maintenant .");
-            if (quantityToReserve > availableStock){
-                log.info("son warehouse n'y a pas la quantité suffisant , essayer de le trouver dans les autres inventories .");
-                List<Inventory> allInventory = inventoryRepository.findAll();
+            if (availableStock >= quantityNeeded){
+                log.info("   -> [SUCCÈS] Le stock pour SKU {} est maintenant disponible à {}. Réservation finale.", product.getSku(), destinationWarehouse.getCode());
 
-                for (Inventory thisInventory : allInventory){
-                    if (quantityToReserve <= thisInventory.getQtyOnHand() - thisInventory.getQtyReserved()){
-                        log.info("trouver l'inventorie qu'est la quantité suffisant .");
-                        Warehouse destinationWarehouse = warehouseRepository.findById(thisInventory.getWarehouse().getId()).orElseThrow(() -> new ResourceNotFoundException("Entrepot not found"));
-                        TransferOrder transferOrder = new TransferOrder(product,sourceWarehouse,destinationWarehouse,quantityToReserve, TransferStatus.PENDING, LocalDateTime.now());
-                        transferOrderRepository.save(transferOrder);
-                        order.setStatus(SalesOrderLineStatus.AWAITING_TRANSFER);
-                        salesOrderLineRepository.save(order);
-                        log.info("changement de status de order a awaiting_transfer et la création d'objet transfer order ");
-                        break;
-                    } else {
-                        continue;
-                    }
+                localInventory.setQtyReserved(localInventory.getQtyReserved() + quantityNeeded);
+                inventoryRepository.save(localInventory);
+
+                line.setStatus(SalesOrderLineStatus.RESERVED);
+                salesOrderLineRepository.save(line);
+            }
+        }
+    }
+
+    private void resolveBackorderedLines(){
+        List<SalesOrderLine> backorderLines = salesOrderLineRepository.findByStatus(SalesOrderLineStatus.BACKORDERED);
+        if (backorderLines.isEmpty()){
+            return;
+        }
+
+        log.info("[AGENT] {} lignes en 'BACKORDERED' trouvées. Recherche de solutions de transfert...",backorderLines.size());
+        for(SalesOrderLine line : backorderLines){
+            Product productToFind = line.getProduct();
+            Warehouse destinationWarehouse = line.getSalesOrder().getWarehouse();
+            int quantityNeeded = line.getQuantity();
+
+            boolean transferAlreadyPending = transferOrderRepository.existsByProductAndDestinationWarehouseAndStatus(productToFind,destinationWarehouse,TransferStatus.PENDING);
+            if (transferAlreadyPending) {
+                continue;
+            }
+
+            List<Warehouse> otherWarehouses = warehouseRepository.findAll().stream()
+                    .filter(w -> !w.getId().equals(destinationWarehouse.getId()))
+                    .toList();
+
+            for (Warehouse sourceWarehouse : otherWarehouses){
+                Inventory remoteInventory = inventoryRepository.findByProductAndWarehouse(productToFind,sourceWarehouse).orElse(new Inventory());
+                int remoteAvailableStock = remoteInventory.getQtyOnHand() - remoteInventory.getQtyReserved();
+
+                if (remoteAvailableStock >= quantityNeeded){
+                    log.info("   -> [SOLUTION] Stock trouvé pour SKU {} à {}. Création d'un ordre de transfert.", productToFind.getSku() , sourceWarehouse.getCode());
+
+                    TransferOrder transferOrder = new TransferOrder(productToFind, sourceWarehouse, destinationWarehouse, quantityNeeded, TransferStatus.PENDING, LocalDateTime.now());
+                    transferOrderRepository.save(transferOrder);
+
+                    line.setStatus(SalesOrderLineStatus.AWAITING_TRANSFER);
+                    salesOrderLineRepository.save(line);
+
+                    break;
                 }
-
-            } else {
-                inventoryService.reserveStockForOrder(order.getSalesOrder());
-                break;
             }
         }
     }
