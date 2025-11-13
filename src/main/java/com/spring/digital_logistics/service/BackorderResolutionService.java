@@ -4,7 +4,6 @@ import com.spring.digital_logistics.entity.*;
 import com.spring.digital_logistics.entity.enums.SalesOrderLineStatus;
 import com.spring.digital_logistics.entity.enums.SalesOrderStatus;
 import com.spring.digital_logistics.entity.enums.TransferStatus;
-import com.spring.digital_logistics.exception.ResourceNotFoundException;
 import com.spring.digital_logistics.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +23,7 @@ public class BackorderResolutionService {
     private final TransferOrderRepository transferOrderRepository;
     private final InventoryService inventoryService;
     private final SalesOrderRepository salesOrderRepository;
-    private static final Logger log = LoggerFactory.getLogger(SupplierSimulationService.class);
+    private static final Logger log = LoggerFactory.getLogger(BackorderResolutionService.class);
 
     public BackorderResolutionService(SalesOrderLineRepository salesOrderLineRepository, InventoryRepository inventoryRepository, WarehouseRepository warehouseRepository, TransferOrderRepository transferOrderRepository, InventoryService inventoryService, SalesOrderRepository salesOrderRepository) {
         this.salesOrderLineRepository = salesOrderLineRepository;

@@ -29,4 +29,12 @@ public class Product {
 
 
     private boolean active = true;
+
+    public Product(String sku , String name , String image , BigDecimal price , boolean active){
+        this.sku = sku;
+        this.name = name;
+        this.image = image;
+        this.price = price;
+        this.active = active;
+    }
 }

@@ -1,0 +1,67 @@
+package com.spring.digital_logistics.service;
+
+import com.spring.digital_logistics.DigitalLogisticsApplicationTests;
+import com.spring.digital_logistics.IntegrationTestBase;
+import com.spring.digital_logistics.entity.*;
+import com.spring.digital_logistics.entity.enums.SalesOrderLineStatus;
+import com.spring.digital_logistics.repository.InventoryRepository;
+import com.spring.digital_logistics.repository.ProductRepository;
+import com.spring.digital_logistics.repository.SalesOrderRepository;
+import com.spring.digital_logistics.repository.WarehouseRepository;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@Transactional
+public class InventoryServiceIntegrationTest extends IntegrationTestBase {
+    @Autowired
+    private InventoryService inventoryService;
+
+    @Autowired
+    private InventoryRepository inventoryRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private WarehouseRepository warehouseRepository;
+
+    @Autowired
+    private SalesOrderRepository salesOrderRepository;
+
+    @Test
+    void reserveStockForOrder_whenStockIsSufficient_shouldUpdateDatabaseCorrectly() {
+        Warehouse warehouse = warehouseRepository.save(new Warehouse("W-INT-TEST", "Integration Test Warehouse"));
+        Product product = productRepository.save(new Product("INT-TSHIRT", "T-Shirt pour Test d'Intégration","null", new BigDecimal(25),true));
+
+        inventoryRepository.save(new Inventory(product, warehouse, 10, 0));
+
+        SalesOrder order = new SalesOrder();
+        order.setWarehouse(warehouse);
+        order.setStatus(null);
+        SalesOrderLine line = new SalesOrderLine();
+        line.setProduct(product);
+        line.setQuantity(5);
+        order.addLine(line);
+        salesOrderRepository.save(order);
+
+
+        boolean result = inventoryService.reserveStockForOrder(order);
+
+
+        assertTrue(result);
+
+        Inventory updatedInventory = inventoryRepository.findByProductAndWarehouse(product, warehouse).orElseThrow();
+        SalesOrder updatedOrder = salesOrderRepository.findById(order.getId()).orElseThrow();
+
+        assertEquals(5, updatedInventory.getQtyReserved(), "La quantité réservée dans la BDD devrait être 5.");
+
+        assertEquals(SalesOrderLineStatus.RESERVED, updatedOrder.getLines().get(0).getStatus(), "Le statut de la ligne devrait être RESERVED.");
+    }
+
+}

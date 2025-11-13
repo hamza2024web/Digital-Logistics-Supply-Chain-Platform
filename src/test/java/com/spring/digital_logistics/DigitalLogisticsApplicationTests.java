@@ -1,10 +1,8 @@
 package com.spring.digital_logistics;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class DigitalLogisticsApplicationTests {
+public class DigitalLogisticsApplicationTests extends IntegrationTestBase {
 
     @Test
     void contextLoads() {
