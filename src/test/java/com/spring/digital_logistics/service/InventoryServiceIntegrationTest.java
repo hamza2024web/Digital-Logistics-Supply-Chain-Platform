@@ -4,15 +4,14 @@ import com.spring.digital_logistics.DigitalLogisticsApplicationTests;
 import com.spring.digital_logistics.IntegrationTestBase;
 import com.spring.digital_logistics.entity.*;
 import com.spring.digital_logistics.entity.enums.SalesOrderLineStatus;
-import com.spring.digital_logistics.repository.InventoryRepository;
-import com.spring.digital_logistics.repository.ProductRepository;
-import com.spring.digital_logistics.repository.SalesOrderRepository;
-import com.spring.digital_logistics.repository.WarehouseRepository;
+import com.spring.digital_logistics.entity.enums.SalesOrderStatus;
+import com.spring.digital_logistics.repository.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -34,8 +33,18 @@ public class InventoryServiceIntegrationTest extends IntegrationTestBase {
     @Autowired
     private SalesOrderRepository salesOrderRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Test
     void reserveStockForOrder_whenStockIsSufficient_shouldUpdateDatabaseCorrectly() {
+        User client = new User();
+        client.setEmail("testclient@example.com");
+        client.setPassword("password");
+        client.setFirstName("Test");
+        client.setLastName("Client");
+        User savedClient = userRepository.save(client);
+
         Warehouse warehouse = warehouseRepository.save(new Warehouse("W-INT-TEST", "Integration Test Warehouse"));
         Product product = productRepository.save(new Product("INT-TSHIRT", "T-Shirt pour Test d'Intégration","null", new BigDecimal(25),true));
 
@@ -43,10 +52,13 @@ public class InventoryServiceIntegrationTest extends IntegrationTestBase {
 
         SalesOrder order = new SalesOrder();
         order.setWarehouse(warehouse);
-        order.setStatus(null);
+        order.setClient(savedClient);
+        order.setStatus(SalesOrderStatus.CREATED);
+        order.setCreatedAt(LocalDateTime.now());
         SalesOrderLine line = new SalesOrderLine();
         line.setProduct(product);
         line.setQuantity(5);
+        line.setStatus(SalesOrderLineStatus.CREATED);
         order.addLine(line);
         salesOrderRepository.save(order);
 
