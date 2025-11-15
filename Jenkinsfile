@@ -6,25 +6,26 @@ pipeline {
         maven 'maven3'
     }
 
-    environment{
+    environment {
         SONAR_HOST_URL = "http://sonarqube:9000"
         SONAR_AUTH_TOKEN = credentials('sonar-token')
     }
 
     stages {
-        stage ('Checkout'){
-            step {
-                echo 'Récupération du code depuis Github...'
+        stage('Checkout') {
+            // CORRECTION: 'step' a été remplacé par 'steps'
+            steps {
+                echo 'Récupération du code depuis GitHub...'
                 checkout scm
             }
         }
 
-        stage ('Build & Test'){
+        stage('Build & Test') {
             steps {
                 echo 'Lancement de mvn clean verify...'
-
                 script {
-                    if (isUnix){
+                    // isUnix() est une fonction, donc les parenthèses sont importantes
+                    if (isUnix()) {
                         sh 'mvn clean verify'
                     } else {
                         bat 'mvn clean verify'
@@ -33,27 +34,28 @@ pipeline {
             }
         }
 
-        stage ('SonarQube Analysis') {
+        stage('SonarQube Analysis') {
             steps {
                 echo 'Lancement de l\'analyse SonarQube...'
-                withSonarQubeEnv('sonarqube'){
+                withSonarQubeEnv('sonarqube') {
                     script {
-                        if (isUnix){
-                            sh 'mvn clean verify'
+                        if (isUnix()) {
+                            // CORRECTION: La commande correcte pour l'analyse est 'mvn sonar:sonar'
+                            sh 'mvn sonar:sonar'
                         } else {
-                            bat 'mvn clean verify'
+                            // CORRECTION: La commande correcte pour l'analyse est 'mvn sonar:sonar'
+                            bat 'mvn sonar:sonar'
                         }
                     }
                 }
             }
         }
 
-        stage ('Quality Gate Check'){
-            step{
-                echo 'Vérification du statut du quality Gate...'
-
-                timeout(time : 5, unit: 'MINUTES'){
-                    waitForQualityGate  abortPipeline: true
+        stage('Quality Gate Check') {
+            steps {
+                echo 'Vérification du statut du Quality Gate...'
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
                 }
             }
         }
