@@ -17,7 +17,7 @@ public abstract class IntegrationTestBase {
     static void configureProperties(DynamicPropertyRegistry registry) {
         database.start();
 
-        String jdbcUrl = String.format("jdbc:postgresql://localhost:%d/%s",
+        String jdbcUrl = String.format("jdbc:postgresql://host.docker.internal:%d/%s",
                 database.getMappedPort(5432),
                 database.getDatabaseName());
 
