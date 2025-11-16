@@ -7,15 +7,11 @@ pipeline {
     }
 
     environment {
-        SONAR_HOST_URL = "http://sonarqube:9000"
-        SONAR_AUTH_TOKEN = credentials('sonar-token')
         TESTCONTAINERS_RYUK_DISABLED = "true"
-        SONAR_QUBE_CONFIG = 'sonarqube'
     }
 
     stages {
         stage('Checkout') {
-            // CORRECTION: 'step' a été remplacé par 'steps'
             steps {
                 echo 'Récupération du code depuis GitHub...'
                 checkout scm
@@ -32,16 +28,16 @@ pipeline {
                         echo "Aucun fichier de configuration Testcontainers à nettoyer."
                     }
                 }
-                    echo 'Lancement de mvn clean verify...'
-                    sh 'mvn clean verify'
+                echo 'Lancement de mvn clean verify...'
+                sh 'mvn clean verify'
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
                 echo "Lancement de l'analyse SonarQube..."
-                withSonarQubeEnv(SONAR_QUBE_CONFIG) {
-                sh 'mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN'
+                withSonarQubeEnv('sonarqube') {
+                    sh 'mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN'
                 }
             }
         }
