@@ -10,7 +10,6 @@ pipeline {
         SONAR_HOST_URL = "http://sonarqube:9000"
         SONAR_AUTH_TOKEN = credentials('sonar-token')
         TESTCONTAINERS_RYUK_DISABLED  = "true"
-        TESTCONTAINERS_HOST_OVERRIDE = 'localhost'
     }
 
     stages {
@@ -38,14 +37,14 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                echo 'Lancement de l\'analyse SonarQube...'
-                withSonarQubeEnv('sonarqube') {
-                    script {
-                        if (isUnix()) {
+                script {
+                    if (currentBuild.result == null || currentBuild.result == 'SUCCESS') {
+                        echo 'Lancement de l\'analyse SonarQube...'
+                        withSonarQubeEnv('sonarqube') {
                             sh 'mvn sonar:sonar'
-                        } else {
-                            bat 'mvn sonar:sonar'
                         }
+                    } else {
+                        echo 'Tests échoués, on saute l\'analyse SonarQube.'
                     }
                 }
             }
@@ -53,9 +52,15 @@ pipeline {
 
         stage('Quality Gate Check') {
             steps {
-                echo 'Vérification du statut du Quality Gate...'
-                timeout(time: 5, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
+                script {
+                    if (currentBuild.result == null || currentBuild.result == 'SUCCESS') {
+                        echo 'Vérification du statut du Quality Gate...'
+                        timeout(time: 5, unit: 'MINUTES') {
+                            waitForQualityGate abortPipeline: true
+                        }
+                    } else {
+                        echo 'Tests échoués, on saute le Quality Gate.'
+                    }
                 }
             }
         }
