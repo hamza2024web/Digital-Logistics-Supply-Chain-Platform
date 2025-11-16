@@ -23,15 +23,11 @@ pipeline {
 
         stage('Build & Test') {
             steps {
+                echo 'Nettoyage de la configuration Testcontainers...'
+                sh 'rm -f $HOME/.testcontainers.properties'
+
                 echo 'Lancement de mvn clean verify...'
-                script {
-                    // isUnix() est une fonction, donc les parenthèses sont importantes
-                    if (isUnix()) {
-                        sh 'mvn clean verify'
-                    } else {
-                        bat 'mvn clean verify'
-                    }
-                }
+                sh 'mvn clean verify'
             }
         }
 

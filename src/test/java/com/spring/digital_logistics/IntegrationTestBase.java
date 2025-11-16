@@ -10,13 +10,14 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest
 @Testcontainers
 public abstract class IntegrationTestBase {
-    static PostgreSQLContainer<?> database = new PostgreSQLContainer<>("postgres:15-alpine")
-            .withNetworkMode("host");
+
+    static PostgreSQLContainer<?> database = new PostgreSQLContainer<>("postgres:15-alpine");
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
         database.start();
 
+        // Cette configuration dynamique est la bonne.
         registry.add("spring.datasource.url", database::getJdbcUrl);
         registry.add("spring.datasource.username", database::getUsername);
         registry.add("spring.datasource.password", database::getPassword);
