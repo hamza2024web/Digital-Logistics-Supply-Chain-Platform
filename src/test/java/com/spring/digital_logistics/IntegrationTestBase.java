@@ -1,36 +1,30 @@
+// Fichier : src/main/java/com/spring/digital_logistics/IntegrationTestBase.java
 package com.spring.digital_logistics;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
-import java.time.Duration;
 
 @SpringBootTest
 @Testcontainers
 public abstract class IntegrationTestBase {
-
-    @Container
     static PostgreSQLContainer<?> database = new PostgreSQLContainer<>("postgres:15-alpine")
-            .withDatabaseName("test")
-            .withUsername("test")
-            .withPassword("test")
-            .withStartupTimeout(Duration.ofMinutes(2))
-            .waitingFor(Wait.forLogMessage(".*database system is ready to accept connections.*\\n", 2));
+            .withNetworkMode("jenkins-net")
+            .withNetworkAliases("db-test");
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", database::getJdbcUrl);
+        database.start();
+
+        final String jdbcUrl = String.format("jdbc:postgresql://db-test:5432/%s", database.getDatabaseName());
+
+        registry.add("spring.datasource.url", () -> jdbcUrl);
         registry.add("spring.datasource.username", database::getUsername);
         registry.add("spring.datasource.password", database::getPassword);
 
-        registry.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
-
-        registry.add("jwt.secret", () -> "une-fausse-cle-pour-les-tests-qui-fonctionne");
-        registry.add("spring.docker.compose.enabled", () -> "false");
+        registry.add("spring.jpa.hibernate.ddl-auto", () -> "update");
+        registry.add("jwt.secret", () -> "un-secret-solide-pour-les-tests");
     }
 }
