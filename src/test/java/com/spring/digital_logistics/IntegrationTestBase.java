@@ -23,7 +23,6 @@ public abstract class IntegrationTestBase {
             database.start();
         }
 
-
         String jdbcUrl = String.format("jdbc:postgresql://db:%d/%s",
                 database.getMappedPort(PostgreSQLContainer.POSTGRESQL_PORT),
                 database.getDatabaseName());
@@ -32,6 +31,8 @@ public abstract class IntegrationTestBase {
         registry.add("spring.datasource.username", database::getUsername);
         registry.add("spring.datasource.password", database::getPassword);
         registry.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
+
+        registry.add("spring.jpa.database-platform", () -> "org.hibernate.dialect.PostgreSQLDialect");
 
         registry.add("jwt.secret", () -> "une-fausse-cle-pour-les-tests-qui-fonctionne");
         registry.add("spring.docker.compose.enabled", () -> "false");
