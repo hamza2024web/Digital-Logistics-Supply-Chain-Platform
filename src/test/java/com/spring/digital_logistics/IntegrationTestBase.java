@@ -1,5 +1,6 @@
 package com.spring.digital_logistics;
 
+import com.github.dockerjava.api.model.HostConfig;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -11,7 +12,12 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 public abstract class IntegrationTestBase {
 
     static PostgreSQLContainer<?> database = new PostgreSQLContainer<>("postgres:15-alpine")
-            .withNetwork(org.testcontainers.containers.Network.SHARED);
+            .withNetworkMode("bridge")
+            .withCreateContainerCmdModifier(cmd ->
+                    cmd.withHostConfig(
+                            new HostConfig().withNetworkMode("bridge")
+                    )
+            );
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
