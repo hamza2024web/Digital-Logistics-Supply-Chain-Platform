@@ -10,7 +10,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 public abstract class IntegrationTestBase {
 
-    static PostgreSQLContainer<?> database = new PostgreSQLContainer<>("postgres:15-alpine");
+    static PostgreSQLContainer<?> database = new PostgreSQLContainer<>("postgres:15-alpine")
+            .withNetwork(org.testcontainers.containers.Network.SHARED);
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
