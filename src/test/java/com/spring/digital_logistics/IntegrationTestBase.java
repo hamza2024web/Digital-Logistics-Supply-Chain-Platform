@@ -1,3 +1,4 @@
+// Fichier : src/main/java/com/spring/digital_logistics/IntegrationTestBase.java
 package com.spring.digital_logistics;
 
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,8 +10,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest
 @Testcontainers
 public abstract class IntegrationTestBase {
-
-    static PostgreSQLContainer<?> database = new PostgreSQLContainer<>("postgres:15-alpine");
+    static PostgreSQLContainer<?> database = new PostgreSQLContainer<>("postgres:15-alpine")
+            .withNetworkMode("host");
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
