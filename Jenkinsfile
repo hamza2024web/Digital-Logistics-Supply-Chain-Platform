@@ -20,15 +20,6 @@ pipeline {
 
         stage('Build & Test') {
             steps {
-                script {
-                    if (fileExists("$HOME/.testcontainers.properties")) {
-                        echo "Nettoyage de l'ancienne configuration Testcontainers..."
-                        sh "rm -f $HOME/.testcontainers.properties"
-                    } else {
-                        echo "Aucun fichier de configuration Testcontainers à nettoyer."
-                    }
-                }
-                echo 'Lancement de mvn clean verify...'
                 sh 'mvn clean verify'
             }
         }
@@ -37,7 +28,14 @@ pipeline {
             steps {
                 echo "Lancement de l'analyse SonarQube..."
                 withSonarQubeEnv('sonarqube') {
-                    sh 'mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN'
+                    withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN_CRED')]) {
+                        script {
+                            if (SONAR_TOKEN_CRED == null || SONAR_TOKEN_CRED.isEmpty()) {
+                                error "Le credential 'sonar-token' est vide ou n'a pas pu être chargé."
+                            }
+                        }
+                        sh "mvn sonar:sonar -Dsonar.login=${SONAR_TOKEN_CRED}"
+                    }
                 }
             }
         }
