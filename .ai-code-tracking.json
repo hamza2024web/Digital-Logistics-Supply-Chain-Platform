@@ -1,0 +1,44 @@
+{
+  "version": "1.0",
+  "records": [
+    {
+      "filePath": "C:/Users/Youcode/Desktop/Digital Logistics/src/test/java/com/spring/digital_logistics/IntegrationTestBase.java",
+      "timestamp": 1763258278196,
+      "startOffset": 424,
+      "endOffset": 580,
+      "codeContent": "static PostgreSQLContainer\u003c?\u003e database \u003d new PostgreSQLContainer\u003c\u003e(\"postgres:15-alpine\")\n        .withNetwork(org.testcontainers.containers.Network.SHARED);",
+      "aiProbability": 95,
+      "aiTool": "AI Assistant",
+      "detectionMethod": "REALTIME_SPEED_ANALYSIS",
+      "lineCount": 2
+    },
+    {
+      "filePath": "C:/Users/Youcode/Desktop/Digital Logistics/src/test/java/com/spring/digital_logistics/IntegrationTestBase.java",
+      "timestamp": 1763301350880,
+      "startOffset": 424,
+      "endOffset": 765,
+      "codeContent": "static PostgreSQLContainer\u003c?\u003e database \u003d new PostgreSQLContainer\u003c\u003e(\"postgres:15-alpine\")\n            .withNetworkMode(\"bridge\")  // Utiliser le réseau bridge\n            .withCreateContainerCmdModifier(cmd -\u003e \n                cmd.withHostConfig(\n                    new HostConfig().withNetworkMode(\"bridge\")\n                )\n            );",
+      "aiProbability": 95,
+      "aiTool": "AI Assistant",
+      "detectionMethod": "REALTIME_SPEED_ANALYSIS",
+      "lineCount": 7
+    },
+    {
+      "filePath": "C:/Users/Youcode/Desktop/Digital Logistics/src/test/java/com/spring/digital_logistics/IntegrationTestBase.java",
+      "timestamp": 1763301359188,
+      "startOffset": 39,
+      "endOffset": 89,
+      "codeContent": "import com.github.dockerjava.api.model.HostConfig;",
+      "aiProbability": 90,
+      "aiTool": "AI Assistant",
+      "detectionMethod": "REALTIME_SPEED_ANALYSIS",
+      "lineCount": 1
+    }
+  ],
+  "toolStats": {
+    "AI Assistant": {
+      "usageCount": 3,
+      "totalLines": 10
+    }
+  }
+}
