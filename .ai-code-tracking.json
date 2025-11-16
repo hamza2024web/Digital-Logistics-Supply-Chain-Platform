@@ -110,12 +110,23 @@
       "aiTool": "AI Assistant",
       "detectionMethod": "REALTIME_SPEED_ANALYSIS",
       "lineCount": 39
+    },
+    {
+      "filePath": "C:/Users/Youcode/Desktop/Digital Logistics/src/test/java/com/spring/digital_logistics/IntegrationTestBase.java",
+      "timestamp": 1763309381997,
+      "startOffset": 0,
+      "endOffset": 1634,
+      "codeContent": "package com.spring.digital_logistics;\n\nimport org.springframework.boot.test.context.SpringBootTest;\nimport org.springframework.test.context.DynamicPropertyRegistry;\nimport org.springframework.test.context.DynamicPropertySource;\nimport org.testcontainers.containers.PostgreSQLContainer;\nimport org.testcontainers.containers.wait.strategy.Wait;\nimport org.testcontainers.junit.jupiter.Container;\nimport org.testcontainers.junit.jupiter.Testcontainers;\n\nimport java.time.Duration;\n\n@SpringBootTest\n@Testcontainers\npublic abstract class IntegrationTestBase {\n\n    @Container\n    static PostgreSQLContainer\u003c?\u003e database \u003d new PostgreSQLContainer\u003c\u003e(\"postgres:15-alpine\")\n            .withDatabaseName(\"test\")\n            .withUsername(\"test\")\n            .withPassword(\"test\")\n            .withStartupTimeout(Duration.ofMinutes(2))\n            .waitingFor(Wait.forLogMessage(\".*database system is ready to accept connections.*\\\\n\", 2));\n\n    @DynamicPropertySource\n    static void configureProperties(DynamicPropertyRegistry registry) {\n        // IMPORTANT: Utiliser getJdbcUrl() fourni par Testcontainers\n        // Cela gère automatiquement le réseau Docker interne\n        registry.add(\"spring.datasource.url\", database::getJdbcUrl);\n        registry.add(\"spring.datasource.username\", database::getUsername);\n        registry.add(\"spring.datasource.password\", database::getPassword);\n\n        registry.add(\"spring.jpa.hibernate.ddl-auto\", () -\u003e \"create-drop\");\n        \n        registry.add(\"jwt.secret\", () -\u003e \"une-fausse-cle-pour-les-tests-qui-fonctionne\");\n        registry.add(\"spring.docker.compose.enabled\", () -\u003e \"false\");\n    }\n}",
+      "aiProbability": 95,
+      "aiTool": "AI Assistant",
+      "detectionMethod": "REALTIME_SPEED_ANALYSIS",
+      "lineCount": 38
     }
   ],
   "toolStats": {
     "AI Assistant": {
-      "usageCount": 10,
-      "totalLines": 172
+      "usageCount": 11,
+      "totalLines": 210
     }
   }
 }
