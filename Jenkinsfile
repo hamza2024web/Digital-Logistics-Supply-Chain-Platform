@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'maven:3.8.6-openjdk-17'
-            args '-v /var/run/docker.sock:/var/run/docker.sock -v /tmp:/tmp --group-add $(stat -c %g /var/run/docker.sock)'
-        }
-    }
+    agent any
 
     tools {
         jdk 'jdk17'
