@@ -10,19 +10,16 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 public abstract class IntegrationTestBase {
 
-    static PostgreSQLContainer<?> database = new PostgreSQLContainer<>("postgres:15-alpine")
-            .withNetworkMode("jenkins-net")
-            .withNetworkAliases("db-test");
+    static PostgreSQLContainer<?> database = new PostgreSQLContainer<>("postgres:15-alpine");
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
         database.start();
 
-        final String jdbcUrl = String.format("jdbc:postgresql://db-test:5432/%s", database.getDatabaseName());
-
-        registry.add("spring.datasource.url", () -> jdbcUrl);
+        registry.add("spring.datasource.url", database::getJdbcUrl);
         registry.add("spring.datasource.username", database::getUsername);
         registry.add("spring.datasource.password", database::getPassword);
+
         registry.add("spring.jpa.hibernate.ddl-auto", () -> "update");
         registry.add("jwt.secret", () -> "un-secret-solide-pour-les-tests");
     }
