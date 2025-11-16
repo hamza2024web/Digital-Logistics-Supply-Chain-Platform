@@ -1,4 +1,3 @@
-// Fichier : src/main/java/com/spring/digital_logistics/IntegrationTestBase.java
 package com.spring.digital_logistics;
 
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,6 +9,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest
 @Testcontainers
 public abstract class IntegrationTestBase {
+
     static PostgreSQLContainer<?> database = new PostgreSQLContainer<>("postgres:15-alpine")
             .withNetworkMode("jenkins-net")
             .withNetworkAliases("db-test");
@@ -23,7 +23,6 @@ public abstract class IntegrationTestBase {
         registry.add("spring.datasource.url", () -> jdbcUrl);
         registry.add("spring.datasource.username", database::getUsername);
         registry.add("spring.datasource.password", database::getPassword);
-
         registry.add("spring.jpa.hibernate.ddl-auto", () -> "update");
         registry.add("jwt.secret", () -> "un-secret-solide-pour-les-tests");
     }
