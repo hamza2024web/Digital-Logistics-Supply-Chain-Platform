@@ -1,6 +1,5 @@
 package com.spring.digital_logistics.service;
 
-import com.spring.digital_logistics.DigitalLogisticsApplicationTests;
 import com.spring.digital_logistics.IntegrationTestBase;
 import com.spring.digital_logistics.entity.*;
 import com.spring.digital_logistics.entity.enums.SalesOrderLineStatus;
