@@ -17,8 +17,11 @@ public abstract class IntegrationTestBase {
     static void configureProperties(DynamicPropertyRegistry registry) {
         database.start();
 
-        // Cette configuration dynamique est la bonne.
-        registry.add("spring.datasource.url", database::getJdbcUrl);
+        String jdbcUrl = String.format("jdbc:postgresql://localhost:%d/%s",
+                database.getMappedPort(5432),
+                database.getDatabaseName());
+
+        registry.add("spring.datasource.url", () -> jdbcUrl);
         registry.add("spring.datasource.username", database::getUsername);
         registry.add("spring.datasource.password", database::getPassword);
 
