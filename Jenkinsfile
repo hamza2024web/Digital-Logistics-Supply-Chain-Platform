@@ -9,7 +9,7 @@ pipeline {
     environment {
         SONAR_HOST_URL = "http://sonarqube:9000"
         SONAR_AUTH_TOKEN = credentials('sonar-token')
-        TESTCONTAINERS_RYUK_DISABLED  = "true"
+        TESTCONTAINERS_HOST_OVERRIDE = 'localhost'
     }
 
     stages {
@@ -41,10 +41,8 @@ pipeline {
                 withSonarQubeEnv('sonarqube') {
                     script {
                         if (isUnix()) {
-                            // CORRECTION: La commande correcte pour l'analyse est 'mvn sonar:sonar'
                             sh 'mvn sonar:sonar'
                         } else {
-                            // CORRECTION: La commande correcte pour l'analyse est 'mvn sonar:sonar'
                             bat 'mvn sonar:sonar'
                         }
                     }
@@ -59,6 +57,12 @@ pipeline {
                     waitForQualityGate abortPipeline: true
                 }
             }
+        }
+    }
+
+    post {
+        always {
+            echo 'Fin du pipeline.'
         }
     }
 }
