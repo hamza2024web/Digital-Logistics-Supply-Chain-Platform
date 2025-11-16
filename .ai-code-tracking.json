@@ -33,12 +33,45 @@
       "aiTool": "AI Assistant",
       "detectionMethod": "REALTIME_SPEED_ANALYSIS",
       "lineCount": 1
+    },
+    {
+      "filePath": "C:/Users/Youcode/Desktop/Digital Logistics/src/test/java/com/spring/digital_logistics/IntegrationTestBase.java",
+      "timestamp": 1763303169048,
+      "startOffset": 683,
+      "endOffset": 1673,
+      "codeContent": "    @DynamicPropertySource\n    static void configureProperties(DynamicPropertyRegistry registry) {\n        if (!database.isRunning()) {\n            database.start();\n        }\n\n        String jdbcUrl \u003d String.format(\"jdbc:postgresql://db:%d/%s\",\n                database.getMappedPort(PostgreSQLContainer.POSTGRESQL_PORT),\n                database.getDatabaseName());\n\n        registry.add(\"spring.datasource.url\", () -\u003e jdbcUrl);\n        registry.add(\"spring.datasource.username\", database::getUsername);\n        registry.add(\"spring.datasource.password\", database::getPassword);\n        registry.add(\"spring.jpa.hibernate.ddl-auto\", () -\u003e \"create-drop\");\n        \n        // AJOUT DE LA SOLUTION : On force le dialecte\n        registry.add(\"spring.jpa.database-platform\", () -\u003e \"org.hibernate.dialect.PostgreSQLDialect\");\n\n        registry.add(\"jwt.secret\", () -\u003e \"une-fausse-cle-pour-les-tests-qui-fonctionne\");\n        registry.add(\"spring.docker.compose.enabled\", () -\u003e \"false\");\n    }",
+      "aiProbability": 95,
+      "aiTool": "AI Assistant",
+      "detectionMethod": "REALTIME_SPEED_ANALYSIS",
+      "lineCount": 21
+    },
+    {
+      "filePath": "C:/Users/Youcode/Desktop/Digital Logistics/src/test/java/com/spring/digital_logistics/IntegrationTestBase.java",
+      "timestamp": 1763304017559,
+      "startOffset": 0,
+      "endOffset": 1463,
+      "codeContent": "package com.spring.digital_logistics;\n\nimport org.springframework.boot.test.context.SpringBootTest;\nimport org.springframework.test.context.DynamicPropertyRegistry;\nimport org.springframework.test.context.DynamicPropertySource;\nimport org.testcontainers.containers.PostgreSQLContainer;\nimport org.testcontainers.junit.jupiter.Testcontainers;\n\n@SpringBootTest\n@Testcontainers\npublic abstract class IntegrationTestBase {\n\n    // On revient à la déclaration la plus simple possible.\n    static PostgreSQLContainer\u003c?\u003e database \u003d new PostgreSQLContainer\u003c\u003e(\"postgres:15-alpine\");\n\n    @DynamicPropertySource\n    static void configureProperties(DynamicPropertyRegistry registry) {\n        // On démarre le conteneur.\n        database.start();\n        \n        // On laisse Testcontainers nous donner directement les bonnes informations.\n        registry.add(\"spring.datasource.url\", database::getJdbcUrl);\n        registry.add(\"spring.datasource.username\", database::getUsername);\n        registry.add(\"spring.datasource.password\", database::getPassword);\n        \n        // On garde ces deux lignes qui sont importantes.\n        registry.add(\"spring.jpa.hibernate.ddl-auto\", () -\u003e \"create-drop\");\n        registry.add(\"spring.jpa.database-platform\", () -\u003e \"org.hibernate.dialect.PostgreSQLDialect\");\n\n        registry.add(\"jwt.secret\", () -\u003e \"une-fausse-cle-pour-les-tests-qui-fonctionne\");\n        registry.add(\"spring.docker.compose.enabled\", () -\u003e \"false\");\n    }\n}",
+      "aiProbability": 95,
+      "aiTool": "AI Assistant",
+      "detectionMethod": "REALTIME_SPEED_ANALYSIS",
+      "lineCount": 33
+    },
+    {
+      "filePath": "C:/Users/Youcode/Desktop/Digital Logistics/src/test/java/com/spring/digital_logistics/IntegrationTestBase.java",
+      "timestamp": 1763304859082,
+      "startOffset": 0,
+      "endOffset": 1584,
+      "codeContent": "package com.spring.digital_logistics;\n\nimport org.springframework.boot.test.context.SpringBootTest;\nimport org.springframework.test.context.DynamicPropertyRegistry;\nimport org.springframework.test.context.DynamicPropertySource;\nimport org.testcontainers.containers.PostgreSQLContainer;\nimport org.testcontainers.containers.wait.strategy.Wait;\nimport org.testcontainers.junit.jupiter.Container;\nimport org.testcontainers.junit.jupiter.Testcontainers;\n\nimport java.time.Duration;\n\n@SpringBootTest\n@Testcontainers\npublic abstract class IntegrationTestBase {\n\n    @Container\n    static PostgreSQLContainer\u003c?\u003e database \u003d new PostgreSQLContainer\u003c\u003e(\"postgres:15-alpine\")\n            .withDatabaseName(\"test\")\n            .withUsername(\"test\")\n            .withPassword(\"test\")\n            .withStartupTimeout(Duration.ofMinutes(2))\n            .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(2)));\n\n    @DynamicPropertySource\n    static void configureProperties(DynamicPropertyRegistry registry) {\n        registry.add(\"spring.datasource.url\", database::getJdbcUrl);\n        registry.add(\"spring.datasource.username\", database::getUsername);\n        registry.add(\"spring.datasource.password\", database::getPassword);\n\n        registry.add(\"spring.jpa.hibernate.ddl-auto\", () -\u003e \"create-drop\");\n        registry.add(\"spring.jpa.database-platform\", () -\u003e \"org.hibernate.dialect.PostgreSQLDialect\");\n\n        registry.add(\"jwt.secret\", () -\u003e \"une-fausse-cle-pour-les-tests-qui-fonctionne\");\n        registry.add(\"spring.docker.compose.enabled\", () -\u003e \"false\");\n    }\n}",
+      "aiProbability": 95,
+      "aiTool": "AI Assistant",
+      "detectionMethod": "REALTIME_SPEED_ANALYSIS",
+      "lineCount": 37
     }
   ],
   "toolStats": {
     "AI Assistant": {
-      "usageCount": 3,
-      "totalLines": 10
+      "usageCount": 6,
+      "totalLines": 101
     }
   }
 }
