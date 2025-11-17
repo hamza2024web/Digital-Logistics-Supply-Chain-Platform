@@ -102,6 +102,7 @@ public class PurchaseOrderServiceIntegrationTest extends IntegrationTestBase {
         PurchaseOrderLine line = new PurchaseOrderLine();
         line.setProduct(savedProduct);
         line.setQuantity(100);
+        line.setPrice(new BigDecimal("12.50"));
         order.addLine(line);
         PurchaseOrder savedOrder = purchaseOrderRepository.save(order);
 
