@@ -106,6 +106,7 @@ public class PurchaseOrderServiceIntegrationTest extends IntegrationTestBase {
         order.addLine(line);
         PurchaseOrder savedOrder = purchaseOrderRepository.save(order);
 
+        order.setStatus(PurchaseOrderStatus.RECEIVED);
         // Act
         // Notre service actuel reçoit tout d'un coup
         purchaseOrderService.receiveOrder(savedOrder.getId(), savedWarehouseManager);
