@@ -1,4 +1,3 @@
-// Fichier : src/main/java/com/spring/digital_logistics/IntegrationTestBase.java
 package com.spring.digital_logistics;
 
 import org.springframework.boot.test.context.SpringBootTest;
