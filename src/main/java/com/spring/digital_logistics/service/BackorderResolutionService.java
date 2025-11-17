@@ -21,16 +21,14 @@ public class BackorderResolutionService {
     private final InventoryRepository inventoryRepository;
     private final WarehouseRepository warehouseRepository;
     private final TransferOrderRepository transferOrderRepository;
-    private final InventoryService inventoryService;
     private final SalesOrderRepository salesOrderRepository;
     private static final Logger log = LoggerFactory.getLogger(BackorderResolutionService.class);
 
-    public BackorderResolutionService(SalesOrderLineRepository salesOrderLineRepository, InventoryRepository inventoryRepository, WarehouseRepository warehouseRepository, TransferOrderRepository transferOrderRepository, InventoryService inventoryService, SalesOrderRepository salesOrderRepository) {
+    public BackorderResolutionService(SalesOrderLineRepository salesOrderLineRepository, InventoryRepository inventoryRepository, WarehouseRepository warehouseRepository, TransferOrderRepository transferOrderRepository, SalesOrderRepository salesOrderRepository) {
         this.salesOrderLineRepository = salesOrderLineRepository;
         this.inventoryRepository = inventoryRepository;
         this.warehouseRepository = warehouseRepository;
         this.transferOrderRepository = transferOrderRepository;
-        this.inventoryService = inventoryService;
         this.salesOrderRepository = salesOrderRepository;
     }
 
