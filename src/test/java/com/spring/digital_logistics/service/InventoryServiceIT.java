@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Transactional
-public class InventoryServiceIntegrationTest extends IntegrationTestBase {
+public class InventoryServiceIT extends IntegrationTestBase {
     @Autowired
     private InventoryService inventoryService;
 

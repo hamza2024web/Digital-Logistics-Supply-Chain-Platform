@@ -18,7 +18,7 @@ import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
-public class PurchaseOrderServiceIntegrationTest extends IntegrationTestBase {
+public class PurchaseOrderServiceIT extends IntegrationTestBase {
 
     @Autowired
     private PurchaseOrderService purchaseOrderService;
