@@ -139,11 +139,13 @@ class PurchaseOrderServiceTest {
     @Test
     void receiveOrder_whenOrderIsSent_shouldUpdateInventoryAndCompleteOrder() {
         // Arrange
-        purchaseOrder.setStatus(PurchaseOrderStatus.SENT); // Statut correct pour la réception
+        purchaseOrder.setStatus(PurchaseOrderStatus.SENT);
         PurchaseOrderLine line = new PurchaseOrderLine();
         line.setProduct(product);
         line.setQuantity(10);
+        line.setPrice(new BigDecimal("12.99"));
         line.setQuantityReceived(0);
+        purchaseOrder.setStatus(PurchaseOrderStatus.RECEIVED);
         purchaseOrder.addLine(line);
 
         when(purchaseOrderRepository.findById(1L)).thenReturn(Optional.of(purchaseOrder));
