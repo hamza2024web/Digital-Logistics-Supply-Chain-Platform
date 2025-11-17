@@ -18,6 +18,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+    networks:
+      - app-network
 
   app:
     build: .
@@ -29,13 +31,9 @@ services:
       - "8083:8083"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/logistdb
-      SPRING_DATASOURCE_USERNAME: springuser
-      SPRING_DATASOURCE_PASSWORD: springpass
-      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
-      SPRING_JPA_SHOW_SQL: true
     restart: unless-stopped
+    networks:
+      - app-network
 
   pgadmin:
     image: dpage/pgadmin4
@@ -48,6 +46,46 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin
     depends_on:
       - db
+    networks:
+      - app-network
+
+  sonarqube:
+    image: sonarqube:9.9-community
+    container_name: sonarqube
+    ports:
+      - "9000:9000"
+    networks:
+      - app-network
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+      - sonar.web.javaOpts=-Xmx1g -Xms1g
+      - sonar.ce.javaOpts=-Xmx1g -Xms1g
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+      - sonarqube_logs:/opt/sonarqube/logs
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    privileged: true
+    user: root
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
   pgdata:
+  sonarqube_data:
+  sonarqube_extensions:
+  sonarqube_logs:
+  jenkins_home:
