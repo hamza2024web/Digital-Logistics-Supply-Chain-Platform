@@ -19,11 +19,9 @@ public class SupplierSimulationService {
 
     private static final Logger log = LoggerFactory.getLogger(SupplierSimulationService.class);
     private final PurchaseOrderRepository purchaseOrderRepository;
-    private final InventoryService inventoryService;
 
-    public SupplierSimulationService(PurchaseOrderRepository purchaseOrderRepository, InventoryService inventoryService) {
+    public SupplierSimulationService(PurchaseOrderRepository purchaseOrderRepository) {
         this.purchaseOrderRepository = purchaseOrderRepository;
-        this.inventoryService = inventoryService;
     }
 
     @Scheduled(fixedRate = 60000)

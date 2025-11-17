@@ -32,7 +32,7 @@ public class SupplierService {
     }
 
     public List<SupplierDTO> getAllSupplier(){
-        return supplierRepository.findAll().stream().map(supplierMapper::toDto).collect(Collectors.toList());
+        return supplierRepository.findAll().stream().map(supplierMapper::toDto).toList();
     }
 
     public SupplierDTO getSupplierById(Long id){

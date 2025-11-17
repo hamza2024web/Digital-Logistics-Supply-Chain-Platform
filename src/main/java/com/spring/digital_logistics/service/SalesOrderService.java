@@ -91,7 +91,7 @@ public class SalesOrderService {
 
     public List<SalesOrderDTO> getMyOrder(User client){
         List<SalesOrder> orders = salesOrderRepository.findAllByClientId(client.getId());
-        return orders.stream().map(salesOrderMapper::toDto).collect(Collectors.toList());
+        return orders.stream().map(salesOrderMapper::toDto).toList();
     }
 
     public SalesOrderDTO getOrder(Long orderId , User client){

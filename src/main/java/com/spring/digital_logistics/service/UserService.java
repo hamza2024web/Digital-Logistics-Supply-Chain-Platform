@@ -77,7 +77,7 @@ public class UserService {
 
     public List<UserDTO> getAllUsers(){
         List<User> users = userRepository.findAll();
-        return users.stream().map(userMapper::toUserDTO).collect(Collectors.toList());
+        return users.stream().map(userMapper::toUserDTO).toList();
     }
 
     public UserDTO createUserByAdmin(AdminUserCreateDTO createDTO){
