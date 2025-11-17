@@ -25,6 +25,6 @@ public abstract class IntegrationTestBase {
         registry.add("spring.datasource.password", database::getPassword);
 
         registry.add("spring.jpa.hibernate.ddl-auto", () -> "update");
-        registry.add("jwt.secret", () -> "un-secret-solide-pour-les-tests");
+        registry.add("jwt.secret", () -> "c2VjcmV0Zm9ydGVzdHMxMjM0NTY=");
     }
 }
