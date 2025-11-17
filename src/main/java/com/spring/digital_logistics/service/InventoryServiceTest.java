@@ -119,7 +119,7 @@ class InventoryServiceTest {
 
         assertFalse(result, "Le résultat devrait être 'false' car le stock est partiellement insuffisant.");
 
-        assertEquals(SalesOrderLineStatus.RESERVED,lineA_Tshirt.getStatus(),"La ligne A (T-shirt) devrait être RESERVED.\");");
+        assertEquals(SalesOrderLineStatus.RESERVED,lineA_Tshirt.getStatus(),"La ligne A (T-shirt) devrait être RESERVED.);");
 
         assertEquals(SalesOrderLineStatus.BACKORDERED,lineB_Jeans.getStatus(), "La ligne B (Jean) devrait être BACKORDERED.");
 
