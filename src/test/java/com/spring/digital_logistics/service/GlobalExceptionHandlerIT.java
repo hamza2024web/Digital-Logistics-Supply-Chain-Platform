@@ -1,4 +1,4 @@
-package com.spring.digital_logistics.exception;
+package com.spring.digital_logistics.service;
 
 import com.spring.digital_logistics.IntegrationTestBase;
 import com.spring.digital_logistics.entity.Product;
