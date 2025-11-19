@@ -47,7 +47,8 @@ public class PurchaseOrderServiceIT extends IntegrationTestBase {
         savedWarehouse = warehouseRepository.save(new Warehouse("W-INT-PO", "Entrepôt Test Commande"));
         savedProduct = productRepository.save(new Product("PROD-INT-PO", "Produit Test Commande", "null", BigDecimal.TEN, true));
 
-        User manager = new User("manger1","test","manager@test.com","password", Role.WAREHOUSE_MANAGER);
+        User manager = new User("manger1","test","manager@test.com", Role.WAREHOUSE_MANAGER);
+        manager.setPassword("password");
         savedWarehouseManager = userRepository.save(manager);
     }
 
