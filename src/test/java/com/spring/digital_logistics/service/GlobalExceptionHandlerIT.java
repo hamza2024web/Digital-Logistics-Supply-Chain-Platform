@@ -239,15 +239,6 @@ public class GlobalExceptionHandlerIT extends IntegrationTestBase {
                 .andExpect(jsonPath("$.timestamp").exists());
     }
 
-    // ========== TESTS IllegalStateException ==========
-
-    @Test
-    void whenInvalidOrderState_shouldReturn400() throws Exception {
-        // Créer une commande et essayer de faire une action invalide
-        // (Par exemple, expédier une commande non réservée)
-        // Vous devrez adapter selon votre implémentation
-    }
-
     // ========== TESTS Validation Errors ==========
 
     @Test
@@ -286,18 +277,6 @@ public class GlobalExceptionHandlerIT extends IntegrationTestBase {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(invalidRegisterJson))
                 .andExpect(status().isBadRequest());
-    }
-
-    // ========== TESTS Exception générique ==========
-
-    @Test
-    void whenUnexpectedError_shouldReturn500() throws Exception {
-        // Pour tester l'exception générique, vous pourriez:
-        // 1. Créer un endpoint de test qui lance une exception
-        // 2. Ou simuler une erreur de base de données
-        // 3. Ou utiliser un mock pour forcer une exception
-
-        // Exemple : essayer de créer un produit avec des données qui causent une erreur DB
     }
 
     // ========== TESTS sans authentification ==========
