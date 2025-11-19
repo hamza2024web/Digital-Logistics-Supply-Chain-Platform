@@ -1,5 +1,6 @@
-package com.spring.digital_logistics.exception;
+package com.spring.digital_logistics.service;
 
+import com.spring.digital_logistics.exception.*;
 import com.spring.digital_logistics.exception.GlobalExceptionHandler.ErrorResponse;
 import com.spring.digital_logistics.exception.GlobalExceptionHandler.ValidationErrorResponse;
 import org.junit.jupiter.api.BeforeEach;
