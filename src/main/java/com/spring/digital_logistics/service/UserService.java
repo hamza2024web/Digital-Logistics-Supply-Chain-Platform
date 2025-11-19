@@ -85,13 +85,8 @@ public class UserService {
             throw new EmailAlreadyUsedException("Cet Email est déjà utilisé !");
         }
 
-        User user = new User();
-        user.setFirstName(createDTO.getFirstName());
-        user.setLastName(createDTO.getLastName());
-        user.setEmail(createDTO.getEmail());
+        User user = new User(createDTO.getFirstName(),createDTO.getLastName(),createDTO.getEmail(),createDTO.getRole());
         user.setPassword(passwordEncoder.encode(createDTO.getPassword()));
-        user.setRole(createDTO.getRole());
-        user.setActive(true);
 
         User savedUser = userRepository.save(user);
 
