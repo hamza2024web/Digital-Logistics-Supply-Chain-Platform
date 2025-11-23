@@ -26,35 +26,35 @@ public class SecurityConfig {
     }
 
     @Bean
+    @Order(1)
+    public SecurityFilterChain basicAuthChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/basic/**")
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/basic/**").hasAnyRole("ADMIN", "WAREHOUSE_MANAGER")
+                )
+                .authenticationProvider(authenticationProvider)
+                .httpBasic(Customizer.withDefaults());
+
+        return http.build();
+    }
+
+    @Bean
     @Order(2)
     public SecurityFilterChain jwtSecurityChain(HttpSecurity http) throws Exception {
         http
                 .securityMatcher("/api/**")
                 .csrf(cs -> cs.disable())
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers(
-                                "/api/auth/**",
+                        .requestMatchers("/api/auth/**",
                                 "/swagger-ui/**",
-                                "/v3/api-docs/**"
-                        ).permitAll()
+                                "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
-        return http.build();
-    }
-
-    @Bean
-    @Order(1)
-    public SecurityFilterChain basicAuthChain(HttpSecurity http) throws Exception {
-        http
-                .securityMatcher("/basic/**")
-                .csrf(cs -> cs.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().hasAnyRole("ADMIN","WAREHOUSE_MANAGER"))
-                .httpBasic(Customizer.withDefaults());
 
         return http.build();
     }
