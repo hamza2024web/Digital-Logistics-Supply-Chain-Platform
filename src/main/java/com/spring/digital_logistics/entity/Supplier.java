@@ -25,4 +25,12 @@ public class Supplier {
     private String email;
 
     private String phone;
+
+    public Supplier(String name, String contactPerson, String email, String phone) {
+        this.name = name;
+        this.contactPerson = contactPerson;
+        this.email = email;
+        this.phone = phone;
+    }
 }
+

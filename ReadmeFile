@@ -1,0 +1,87 @@
+A — Sécurité Web & Concepts de Base :
+    1 - c'est quoi la difference entre Authentification et Autorisation : est le authentification pour verify qui l'utilisateur
+    essayer de faire login ( verify who you are ) , et l'autorisation pour verify les permissions de l'utilisateur ( son role
+    , et les pages qu'a l'autorisation de l'accéder ) .
+
+    2 - Attaque web courant : -> brute force : est une type d'attacke lorsque un hacker essayer multi username et password de maniére
+    aléatoire jusqu'à il a trouver le correct .
+                              -> XSS : lorsque les hacker injecter un script javascript dans website .
+                              -> CSRF : lorsque un victim a tombé dans envoyer un request inattendue avec un valid cookies .
+                              -> Session Fixation : lorsque un hacker forcer un victim to utiliser un valid session id .
+                              -> Vol De Session : lorsque un attacker vol un session id .
+
+    3 - Important de Https : c'est trés important dans authentification et session et cookies et aussi dans les api ... etc , car
+        il chiffré la communication entre le client et le serveur .
+
+    4 - principes de sécurité moderne “Defense in Depth” : est un principe de sécurité qui consiste a protéger l'application avec
+        plusieurs couches de protection .
+
+B - Architecture moderne de Spring Security :
+    1 - SecurityFilterChain : c'est un bean gerer par spring  qu'est définir les roles des requests http et le filter chaque request.
+
+    2 - DelegatingFilterProxy : c'est la point d'entrée qu'est rediger les request dans servlet container vers spring security précisément SecurityFilterChain .
+
+    3 - Authentification Manager : c'est le component qu'est responsable de gérer le process de l'authentification .
+
+    4 - Authentification Provider : c'est une class qu'est effectue une tache spécifique authentification login .
+
+    5 - User Derails service : utiliser par spring security to chargé les information de l'utilisateur .
+
+    6 - PasswordEncoder : c'est une interface de spring qu'est hashé le mot de pass de l'utilisateur avant de l'enregistrer dans
+        la base de donnée .
+
+    7 - difference entre roles et l'authorités : est l'authorités ce sont les permissions exactes assigné a un utilisateur et le role est une catégorie d'
+    utilisateur .
+
+    8 - disparition de WebSecurityConfigurerAdapter par ce que il est trop magie et impossible de utiliser IOC .
+
+    9 - Un schéma clair du flux d’une requête sécurisée doit être inclus :
+         ┌───────────────────────────────┐
+         │     1. Client envoie requête   │
+         │  GET /api/orders avec JWT      │
+         └───────────────┬──────────────┘
+                         │
+                         ▼
+           ┌───────────────────────────┐
+           │ DelegatingFilterProxy     │
+           │ (passe la requête à la    │
+           │ SecurityFilterChain)      │
+           └───────────────┬──────────┘
+                           │
+                           ▼
+           ┌───────────────────────────┐
+           │   SecurityFilterChain     │
+           └───────────────┬──────────┘
+                           │
+                           ▼
+           ┌───────────────────────────┐
+           │      JwtAuthFilter        │
+           │ - Vérifie header Bearer   │
+           │ - Extrait username        │
+           │ - Charge UserDetails      │
+           │ - Valide le token         │
+           │ - Remplit SecurityContext │
+           └───────────────┬──────────┘
+                           │ (si JWT valide)
+                           ▼
+           ┌───────────────────────────┐
+           │ UsernamePasswordAuthFilter│  (ignoré car JWT)
+           └───────────────┬──────────┘
+                           │
+                           ▼
+           ┌───────────────────────────┐
+           │    AuthorizationManager    │
+           │  Vérifie roles/authorities │
+           │  Exemple : hasRole("ADMIN")│
+           └───────────────┬──────────┘
+                           │
+                           ▼
+           ┌───────────────────────────┐
+           │     Contrôleur REST       │
+           │   (exécute l’endpoint)    │
+           └───────────────┬──────────┘
+                           │
+                           ▼
+           ┌───────────────────────────┐
+           │   Réponse envoyée au client │
+           └───────────────────────────┘

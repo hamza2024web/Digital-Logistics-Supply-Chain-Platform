@@ -220,7 +220,7 @@ public class InventoryService {
         int newQuantityOnHand =  inventorySource.getQtyOnHand() - quantity;
         inventorySource.setQtyOnHand(newQuantityOnHand);
 
-        Inventory savedQuantity = inventoryRepository.save(inventorySource);
+        inventoryRepository.save(inventorySource);
 
     }
 

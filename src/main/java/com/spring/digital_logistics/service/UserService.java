@@ -77,7 +77,7 @@ public class UserService {
 
     public List<UserDTO> getAllUsers(){
         List<User> users = userRepository.findAll();
-        return users.stream().map(userMapper::toUserDTO).collect(Collectors.toList());
+        return users.stream().map(userMapper::toUserDTO).toList();
     }
 
     public UserDTO createUserByAdmin(AdminUserCreateDTO createDTO){
@@ -85,13 +85,8 @@ public class UserService {
             throw new EmailAlreadyUsedException("Cet Email est déjà utilisé !");
         }
 
-        User user = new User();
-        user.setFirstName(createDTO.getFirstName());
-        user.setLastName(createDTO.getLastName());
-        user.setEmail(createDTO.getEmail());
+        User user = new User(createDTO.getFirstName(),createDTO.getLastName(),createDTO.getEmail(),createDTO.getRole());
         user.setPassword(passwordEncoder.encode(createDTO.getPassword()));
-        user.setRole(createDTO.getRole());
-        user.setActive(true);
 
         User savedUser = userRepository.save(user);
 

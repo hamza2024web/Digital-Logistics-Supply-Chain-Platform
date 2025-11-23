@@ -97,22 +97,34 @@ public class PurchaseOrderService {
             throw new PurchaseOrderStatusException("Cette commande n'est pas en attente de réception. Statut actuel: " + order.getStatus());
         }
 
-        for (PurchaseOrderLine line : order.getLines()){
-            if (line.getQuantityReceived() < line.getQuantity()){
+        for (PurchaseOrderLine line : order.getLines()) {
+            int quantityAlreadyReceived = line.getQuantityReceived();
+            int quantityOrdered = line.getQuantity();
+
+            if (quantityAlreadyReceived < quantityOrdered) {
+                int quantityToReceiveNow = quantityOrdered - quantityAlreadyReceived;
 
                 MovementRequestDTO inboundInstruction = new MovementRequestDTO();
                 inboundInstruction.setProductId(line.getProduct().getId());
                 inboundInstruction.setWarehouseId(order.getDestinationWarehouse().getId());
-                inboundInstruction.setQuantity(line.getQuantity());
+                inboundInstruction.setQuantity(quantityToReceiveNow);
 
                 inventoryService.recordInboundMovement(inboundInstruction);
 
-                line.setQuantityReceived(line.getQuantity());
+                line.setQuantityReceived(quantityOrdered);
             }
         }
-        order.setStatus(PurchaseOrderStatus.COMPLETED);
-        PurchaseOrder savedOrder = purchaseOrderRepository.save(order);
 
+        boolean isFullyCompleted = order.getLines().stream()
+                .allMatch(line -> line.getQuantityReceived() >= line.getQuantity());
+
+        if (isFullyCompleted) {
+            order.setStatus(PurchaseOrderStatus.COMPLETED);
+        } else {
+            order.setStatus(PurchaseOrderStatus.PARTIALLY_RECEIVED);
+        }
+
+        PurchaseOrder savedOrder = purchaseOrderRepository.save(order);
         return purchaseOrderMapper.toDto(savedOrder);
     }
 }

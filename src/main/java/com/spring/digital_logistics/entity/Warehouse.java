@@ -23,4 +23,9 @@ public class Warehouse {
 
     @Column(nullable = false)
     private String name;
+
+    public Warehouse(String code , String name){
+        this.code = code;
+        this.name = name;
+    }
 }

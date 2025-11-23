@@ -23,7 +23,7 @@ public class ProductService {
     }
 
     public List<ProductDTO> getAllProducts(){
-        return productRepository.findAll().stream().map(productMapper::toDto).collect(Collectors.toList());
+        return productRepository.findAll().stream().map(productMapper::toDto).toList();
     }
 
     @Transactional

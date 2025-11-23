@@ -28,7 +28,7 @@ public class WarehouseService {
     public List<WarehouseDTO> getAllWarehouses() {
         return warehouseRepository.findAll().stream()
                 .map(warehouseMapper::toDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional
