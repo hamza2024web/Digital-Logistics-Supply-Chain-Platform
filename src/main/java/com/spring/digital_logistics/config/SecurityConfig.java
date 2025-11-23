@@ -26,10 +26,11 @@ public class SecurityConfig {
     }
 
     @Bean
-    @Order(1)
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    @Order(2)
+    public SecurityFilterChain jwtSecurityChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
+                .securityMatcher("/api/**")
+                .csrf(cs -> cs.disable())
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(
                                 "/api/auth/**",
@@ -38,7 +39,7 @@ public class SecurityConfig {
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -46,14 +47,11 @@ public class SecurityConfig {
     }
 
     @Bean
-    @Order(2)
-    public SecurityFilterChain basicAuthChain(HttpSecurity http) throws Exception{
+    @Order(1)
+    public SecurityFilterChain basicAuthChain(HttpSecurity http) throws Exception {
         http
-                .securityMatcher(request -> {
-                    String header = request.getHeader("Authorization");
-                    return header != null && header.startsWith("Basic ");
-                })
-                .csrf(csrf -> csrf.disable())
+                .securityMatcher("/basic/**")
+                .csrf(cs -> cs.disable())
                 .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults());
 
