@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/basic/users")
 public class UserController {
 
     private final UserService userService;
@@ -19,7 +19,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserCreateDTO userCreateDTO){
+    public ResponseEntity<UserDTO> getAllUsers(@RequestBody UserCreateDTO userCreateDTO){
         UserDTO createUser = userService.register(userCreateDTO);
         return ResponseEntity.ok(createUser);
     }

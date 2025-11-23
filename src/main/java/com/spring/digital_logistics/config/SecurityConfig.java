@@ -52,7 +52,8 @@ public class SecurityConfig {
         http
                 .securityMatcher("/basic/**")
                 .csrf(cs -> cs.disable())
-                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().hasAnyRole("ADMIN","WAREHOUSE_MANAGER"))
                 .httpBasic(Customizer.withDefaults());
 
         return http.build();
