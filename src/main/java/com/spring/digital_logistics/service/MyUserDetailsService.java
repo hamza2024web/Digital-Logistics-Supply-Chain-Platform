@@ -1,7 +1,9 @@
 package com.spring.digital_logistics.service;
 
+import com.spring.digital_logistics.entity.User;
 import com.spring.digital_logistics.repository.UserRepository;
-import org.springframework.security.core.userdetails.User;
+import com.spring.digital_logistics.security.service.UserDetailsImpl;
+import jakarta.transaction.Transactional;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,12 +18,11 @@ public class MyUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        var user = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    @Transactional
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with email: " + email));
 
-        return  User.withUsername(user.getEmail())
-                .password(user.getPassword())
-                .roles(String.valueOf(user.getRole()))
-                .build();
+        return  UserDetailsImpl.build(user);
     }
 }
