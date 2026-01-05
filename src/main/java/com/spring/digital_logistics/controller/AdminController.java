@@ -88,7 +88,7 @@ public class AdminController {
     public ResponseEntity<List<ProductDTO>> getAllProducts(){
         List<ProductDTO> products = productService.getAllProducts();
         return ResponseEntity.ok(products);
-    }
+    }   
 
     @Operation(summary = "supprimer un produit")
     @DeleteMapping("/products/{id}")

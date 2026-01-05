@@ -5,15 +5,21 @@ import com.spring.digital_logistics.dto.request.login.LoginDTO;
 import com.spring.digital_logistics.dto.request.user.UserCreateDTO;
 import com.spring.digital_logistics.dto.response.login.LoginResponseDTO;
 import com.spring.digital_logistics.dto.response.user.UserDTO;
+import com.spring.digital_logistics.entity.RefreshToken;
 import com.spring.digital_logistics.entity.User;
 import com.spring.digital_logistics.entity.enums.Role;
 import com.spring.digital_logistics.exception.EmailAlreadyUsedException;
 import com.spring.digital_logistics.exception.ResourceNotFoundException;
 import com.spring.digital_logistics.mapper.UserMapper;
 import com.spring.digital_logistics.repository.UserRepository;
+import com.spring.digital_logistics.security.jwt.JwtUtils;
+import com.spring.digital_logistics.security.service.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,14 +36,18 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final JwtUtils jwtUtils;
+    private final RefreshTokenService refreshTokenService;
 
     @Autowired
-    public UserService(UserRepository userRepository , UserMapper userMapper, PasswordEncoder passwordEncoder,JwtService jwtService, AuthenticationManager authenticationManager){
+    public UserService(UserRepository userRepository , UserMapper userMapper, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager, JwtUtils jwtUtils, RefreshTokenService refreshTokenService){
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
+        this.jwtUtils = jwtUtils;
+        this.refreshTokenService = refreshTokenService;
     }
 
     @Transactional
@@ -61,13 +71,24 @@ public class UserService {
     }
 
     public LoginResponseDTO login(LoginDTO loginDTO){
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getEmail(),loginDTO.getPassword()));
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getEmail(),loginDTO.getPassword()));
 
-        User user = userRepository.findByEmail(loginDTO.getEmail()).orElseThrow();
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String jwtToken  = jwtService.generateToken(user);
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        return new LoginResponseDTO(jwtToken);
+        String jwt = jwtUtils.generateJwtToken(authentication);
+
+        refreshTokenService.deleteByUserId(userDetails.getId());
+
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+
+        return LoginResponseDTO.builder()
+                .token(jwt)
+                .refreshToken(refreshToken.getToken())
+                .email(userDetails.getEmail())
+                .role(userDetails.getAuthorities().stream().findFirst().get().getAuthority())
+                .build();
     }
 
     public Optional<UserDTO> getUserByEmail(String email){

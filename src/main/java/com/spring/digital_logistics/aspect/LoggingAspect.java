@@ -21,7 +21,7 @@ public class LoggingAspect {
     // On logue aussi les argumetns pour plus de conexte
     @Before("allServiceMethods()")
     public void logBeforeMethodCall(JoinPoint joinPoint){
-        String methodName = joinPoint.getSignature().toShortString(); //donne un nom plus précis
+        String methodName = joinPoint.getSignature().toShortString();
         String args = Arrays.toString(joinPoint.getArgs());
         log.info("[AOP-BEFORE] ==> Appel de {} avec les arguments: {}", methodName , args);
     }

@@ -47,18 +47,17 @@ Protège les mots de passe, cookies, et tokens (JWT/Basic Auth).
 Plusieurs couches de sécurité pour limiter les risques et protéger l’application.
 
 B – Architecture Spring Security
-Composants principaux
-Composant	Rôle
-SecurityFilterChain	Définit les règles et filtres HTTP
-DelegatingFilterProxy	Redirige les requêtes vers Spring Security
-AuthenticationManager	Gère l’authentification complète
-AuthenticationProvider	Valide les credentials
-UserDetailsService	Charge les utilisateurs depuis la DB
-PasswordEncoder	Hache les mots de passe (BCrypt)
-Roles vs Authorities	Role = catégorie, Authority = permission exacte
-Schéma flux requête sécurisée
-Client -> DelegatingFilterProxy -> SecurityFilterChain -> JwtAuthFilter (si JWT)
--> DaoAuthenticationProvider (si Basic Auth)
+- Composants principaux
+- Composant	Rôle
+- SecurityFilterChain	Définit les règles et filtres HTTP
+- DelegatingFilterProxy	Redirige les requêtes vers Spring Security
+- AuthenticationManager	Gère l’authentification complète
+- AuthenticationProvider	Valide les credentials
+- UserDetailsService	Charge les utilisateurs depuis la DB
+- PasswordEncoder	Hache les mots de passe (BCrypt)
+- Roles vs Authorities	Role = catégorie, Authority = permission exacte
+- Schéma flux requête sécurisée
+- Client -> DelegatingFilterProxy -> SecurityFilterChain -> JwtAuthFilter (si JWT) -> DaoAuthenticationProvider (si Basic Auth)
 -> Vérification roles/authorities
 -> Contrôleur REST
 -> Réponse
