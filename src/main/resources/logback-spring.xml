@@ -11,7 +11,7 @@
 
     <!-- Appender Logstash -->
     <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <!-- REMPLACEZ localhost PAR logstash -->
+
         <destination>logstash:5000</destination>
 
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">

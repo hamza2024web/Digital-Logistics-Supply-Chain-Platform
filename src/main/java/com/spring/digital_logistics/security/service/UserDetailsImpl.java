@@ -36,8 +36,6 @@ public class UserDetailsImpl implements UserDetails {
 
     // Cette méthode convertit votre Entité User -> UserDetailsImpl
     public static UserDetailsImpl build(User user) {
-        // On suppose qu'un user a un rôle (ex: "ROLE_ADMIN")
-        // Adaptez "user.getRole()" selon comment vous stockez le rôle (String ou Entité)
         List<GrantedAuthority> authorities = Collections.singletonList(
                 new SimpleGrantedAuthority(user.getRole().name())
         );
