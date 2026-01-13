@@ -11,6 +11,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static java.util.Arrays.asList;
 
 @Configuration
 @EnableWebSecurity
@@ -26,10 +34,36 @@ public class SecurityConfig {
     }
 
     @Bean
+    public CorsConfigurationSource corsConfigurationSource(){
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+
+        configuration.setAllowedMethods(Arrays.asList(
+            "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
+        ));
+
+        configuration.setAllowedHeaders(List.of("*"));
+
+        configuration.setAllowCredentials(true);
+
+        configuration.setExposedHeaders(Arrays.asList(
+           "Authorization", "Content-Type"
+        ));
+
+        configuration.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
+    }
+    @Bean
     @Order(1)
     public SecurityFilterChain basicAuthChain(HttpSecurity http) throws Exception {
         http
                 .securityMatcher("/basic/**")
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/basic/**").hasAnyRole("ADMIN", "WAREHOUSE_MANAGER")
@@ -45,6 +79,7 @@ public class SecurityConfig {
     public SecurityFilterChain jwtSecurityChain(HttpSecurity http) throws Exception {
         http
                 .securityMatcher("/api/**")
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(cs -> cs.disable())
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/api/auth/**",
