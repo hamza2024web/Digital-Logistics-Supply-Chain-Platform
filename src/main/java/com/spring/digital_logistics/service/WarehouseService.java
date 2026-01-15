@@ -71,6 +71,6 @@ public class WarehouseService {
         warehouse.setName(createDTO.getName());
 
         Warehouse updated = warehouseRepository.save(warehouse);
-        return warehouseMapper.toDto(updated);
+        return warehouseMapper.toDTO(updated);
     }
 }
