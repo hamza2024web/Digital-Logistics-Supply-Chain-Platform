@@ -56,7 +56,7 @@ public class RefreshTokenService {
     }
 
     // Suppression par User ID (Rotation)
-    @Transactional // Très important pour que la suppression fonctionne
+    @Transactional
     public int deleteByUserId(Long userId) {
         return refreshTokenRepository.deleteByUser(userRepository.findById(userId).get());
     }

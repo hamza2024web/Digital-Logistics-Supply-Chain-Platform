@@ -11,6 +11,7 @@ import com.spring.digital_logistics.entity.enums.Role;
 import com.spring.digital_logistics.exception.EmailAlreadyUsedException;
 import com.spring.digital_logistics.exception.ResourceNotFoundException;
 import com.spring.digital_logistics.mapper.UserMapper;
+import com.spring.digital_logistics.repository.RefreshTokenRepository;
 import com.spring.digital_logistics.repository.UserRepository;
 import com.spring.digital_logistics.security.jwt.JwtUtils;
 import com.spring.digital_logistics.security.service.UserDetailsImpl;
@@ -38,9 +39,10 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final RefreshTokenService refreshTokenService;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository , UserMapper userMapper, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager, JwtUtils jwtUtils, RefreshTokenService refreshTokenService){
+    public UserService(UserRepository userRepository , UserMapper userMapper, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager, JwtUtils jwtUtils, RefreshTokenService refreshTokenService, RefreshTokenRepository refreshTokenRepository){
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
@@ -48,6 +50,7 @@ public class UserService {
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
         this.refreshTokenService = refreshTokenService;
+        this.refreshTokenRepository = refreshTokenRepository;
     }
 
     @Transactional
@@ -128,6 +131,8 @@ public class UserService {
         if (!userRepository.existsById(userId)){
             throw new ResourceNotFoundException("Utilisateur non trouvé avec l'ID : " + userId);
         }
+
+        refreshTokenRepository.deleteByUser(userRepository.findById(userId).get());
 
         userRepository.deleteById(userId);
     }
