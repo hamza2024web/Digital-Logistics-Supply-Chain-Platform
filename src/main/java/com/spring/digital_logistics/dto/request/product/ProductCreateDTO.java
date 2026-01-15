@@ -1,5 +1,6 @@
 package com.spring.digital_logistics.dto.request.product;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -8,15 +9,17 @@ import java.math.BigDecimal;
 
 @Data
 public class ProductCreateDTO {
-    @NotBlank(message = "Le Sku ne doit pas étre vide")
+    @NotBlank(message = "Le SKU est requis")
     private String sku;
 
-    @NotBlank(message = "Le nom ne doit pas étre vide")
+    @NotBlank(message = "Le nom du produit est requis")
     private String name;
 
-    private String image;
+    private String image;  // Optionnel
+
+    @NotNull(message = "Le prix est requis")
+    @Min(value = 0, message = "Le prix doit être positif")
     private BigDecimal price;
 
-    @NotNull(message = "Le Statut actif ne doit pas étre vide")
-    private boolean active;
+    private Boolean active = true;
 }

@@ -110,7 +110,7 @@ public class AdminController {
         return ResponseEntity.ok(updatedProduct);
     }
 
-    @Operation(summary = "Changer le statut d'un produit")  // ✅ Ajouté
+    @Operation(summary = "Changer le statut d'un produit")
     @PatchMapping("/products/{id}/status")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ProductDTO> toggleProductStatus(@PathVariable Long id, @RequestParam boolean active){
@@ -129,7 +129,7 @@ public class AdminController {
     // ========== WAREHOUSES ==========
 
     @Operation(summary = "Créer un entrepôt")
-    @PostMapping("/warehouses")  // ✅ Corrigé : minuscule + pluriel
+    @PostMapping("/warehouses")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<WarehouseDTO> createWarehouse(@Valid @RequestBody WarehouseCreateDTO createDTO){
         WarehouseDTO newWarehouse = warehouseService.createWarehouse(createDTO);
@@ -137,7 +137,7 @@ public class AdminController {
     }
 
     @Operation(summary = "Obtenir tous les entrepôts")
-    @GetMapping("/warehouses")  // ✅ Corrigé : minuscule + pluriel
+    @GetMapping("/warehouses")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<WarehouseDTO>> getAllWarehouses(){
         List<WarehouseDTO> warehouses = warehouseService.getAllWarehouses();
@@ -145,7 +145,7 @@ public class AdminController {
     }
 
     @Operation(summary = "Supprimer un entrepôt")
-    @DeleteMapping("/warehouses/{id}")  // ✅ Corrigé : "/" ajouté
+    @DeleteMapping("/warehouses/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteWarehouse(@PathVariable Long id){
@@ -205,7 +205,7 @@ public class AdminController {
     }
 
     @Operation(summary = "Envoyer un bon de commande")
-    @PatchMapping("/purchase-orders/{id}/send")  // ✅ Corrigé : "orders" pluriel
+    @PatchMapping("/purchase-orders/{id}/send")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<PurchaseOrderDTO> sendPurchaseOrder(@PathVariable Long id){
         PurchaseOrderDTO updatedOrder = purchaseOrderService.sendPurchaseOrder(id);

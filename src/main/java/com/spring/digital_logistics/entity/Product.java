@@ -28,7 +28,7 @@ public class Product {
     private BigDecimal price;
 
 
-    private boolean active = true;
+    private Boolean active = true;
 
     public Product(String sku , String name , String image , BigDecimal price , boolean active){
         this.sku = sku;
