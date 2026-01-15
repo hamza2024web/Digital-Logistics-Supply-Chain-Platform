@@ -152,6 +152,21 @@ public class AdminController {
         warehouseService.deleteWarehouse(id);
     }
 
+    @Operation(summary = "Obtenir un entrepôt par ID")
+    @GetMapping("/warehouses/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<WarehouseDTO> getWarehouseById(@PathVariable Long id){
+        WarehouseDTO warehouse = warehouseService.getWarehouseById(id);
+        return ResponseEntity.ok(warehouse);
+    }
+
+    @Operation(summary = "Mettre à jour un entrepôt")
+    @PutMapping("/warehouses/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<WarehouseDTO> updateWarehouse(@PathVariable Long id, @Valid @RequestBody WarehouseCreateDTO createDTO){
+        WarehouseDTO updatedWarehouse = warehouseService.updateWarehouse(id, createDTO);
+        return ResponseEntity.ok(updatedWarehouse);
+    }
     // ========== SUPPLIERS ==========
 
     @Operation(summary = "Créer un fournisseur")

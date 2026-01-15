@@ -4,6 +4,7 @@ package com.spring.digital_logistics.service;
 import com.spring.digital_logistics.dto.request.warehouse.WarehouseCreateDTO;
 import com.spring.digital_logistics.dto.response.warehouse.WarehouseDTO;
 import com.spring.digital_logistics.entity.Warehouse;
+import com.spring.digital_logistics.exception.BusinessException;
 import com.spring.digital_logistics.exception.ResourceNotFoundException;
 import com.spring.digital_logistics.exception.WarehouseCodeAlreadyUsedException; // Tu devras créer ce fichier
 import com.spring.digital_logistics.mapper.WarehouseMapper;
@@ -47,5 +48,29 @@ public class WarehouseService {
             throw new ResourceNotFoundException("Entrepôt non trouvé avec l'ID : " + id);
         }
         warehouseRepository.deleteById(id);
+    }
+
+    public WarehouseDTO getWarehouseById(Long id){
+        Warehouse warehouse = warehouseRepository. findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Entrepôt non trouvé avec l'ID :  " + id));
+        return warehouseMapper.toDTO(warehouse);
+    }
+
+    @Transactional
+    public WarehouseDTO updateWarehouse(Long id, WarehouseCreateDTO createDTO){
+        Warehouse warehouse = warehouseRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Entrepôt non trouvé"));
+
+        // Vérifier si le code est modifié et s'il existe déjà
+        if (! warehouse.getCode().equals(createDTO.getCode()) &&
+                warehouseRepository.existsByCode(createDTO.getCode())) {
+            throw new BusinessException("Ce code d'entrepôt est déjà utilisé");
+        }
+
+        warehouse.setCode(createDTO.getCode());
+        warehouse.setName(createDTO.getName());
+
+        Warehouse updated = warehouseRepository.save(warehouse);
+        return warehouseMapper.toDto(updated);
     }
 }
