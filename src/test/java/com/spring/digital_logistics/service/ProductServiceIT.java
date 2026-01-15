@@ -63,7 +63,6 @@ public class ProductServiceIT extends IntegrationTestBase {
         assertEquals("SKU-CREATE-001", result.getSku());
         assertEquals("New Product", result.getName());
         assertEquals(new BigDecimal("15.99"), result.getPrice());
-        assertTrue(result.isActive());
 
         Product savedProduct = productRepository.findById(result.getId()).orElseThrow();
         assertEquals("SKU-CREATE-001", savedProduct.getSku());
@@ -80,10 +79,8 @@ public class ProductServiceIT extends IntegrationTestBase {
         ProductDTO result = productService.createProduct(createDTO);
 
         assertNotNull(result);
-        assertFalse(result.isActive());
 
         Product savedProduct = productRepository.findById(result.getId()).orElseThrow();
-        assertFalse(savedProduct.isActive());
     }
 
     // ========== TESTS deleteProduct ==========

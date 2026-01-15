@@ -7,7 +7,7 @@ import com.spring.digital_logistics.exception.BusinessException;
 import com.spring.digital_logistics.exception.ResourceNotFoundException;
 import com.spring.digital_logistics.mapper.ProductMapper;
 import com.spring.digital_logistics.repository.ProductRepository;
-import com.spring.digital_logistics.repository.SalesOrderRepository;
+import com.spring.digital_logistics.repository.SalesOrderLineRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,12 +17,12 @@ import java.util. List;
 public class ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
-    private final SalesOrderRepository orderRepository;
+    private final SalesOrderLineRepository salesOrderLineRepository;
 
-    public ProductService(ProductRepository productRepository, ProductMapper productMapper, SalesOrderRepository orderRepository){
+    public ProductService(ProductRepository productRepository, ProductMapper productMapper, SalesOrderLineRepository salesOrderLineRepository){
         this.productRepository = productRepository;
         this.productMapper = productMapper;
-        this.orderRepository = orderRepository;
+        this.salesOrderLineRepository = salesOrderLineRepository;
     }
 
     public List<ProductDTO> getAllProducts(){
@@ -86,7 +86,7 @@ public class ProductService {
             throw new ResourceNotFoundException("Produit non trouvé avec l'ID : " + id);
         }
 
-        if (orderRepository.existsByProductId(id)) {
+        if (salesOrderLineRepository.existsByProductId(id)) {
              throw new BusinessException("Impossible de supprimer ce produit car il est utilisé dans des commandes");
         }
 
