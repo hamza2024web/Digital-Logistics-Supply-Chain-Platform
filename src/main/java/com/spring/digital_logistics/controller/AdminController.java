@@ -210,6 +210,13 @@ public class AdminController {
     }
 
     // ========== PURCHASE ORDERS ==========
+    @Operation(summary = "Obtenir tous les bons de commande")
+    @GetMapping("/purchase-orders")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<List<PurchaseOrderDTO>> getAllPurchaseOrders(){
+        List<PurchaseOrderDTO> orders = purchaseOrderService.getAllPurchaseOrders();
+        return ResponseEntity.ok(orders);
+    }
 
     @Operation(summary = "Créer un bon de commande")
     @PostMapping("/purchase-orders")
@@ -227,6 +234,21 @@ public class AdminController {
         return ResponseEntity.ok(updatedOrder);
     }
 
+    @Operation(summary = "Obtenir un bon de commande par ID")
+    @GetMapping("/purchase-orders/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<PurchaseOrderDTO> getPurchaseOrderById(@PathVariable Long id) {
+        PurchaseOrderDTO order = purchaseOrderService.getPurchaseOrderById(id);
+        return ResponseEntity.ok(order);
+    }
+
+    @Operation(summary = "Annuler un bon de commande")
+    @PatchMapping("/purchase-orders/{id}/cancel")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<PurchaseOrderDTO> cancelPurchaseOrder(@PathVariable Long id) {
+        PurchaseOrderDTO cancelledOrder = purchaseOrderService.cancelPurchaseOrder(id);
+        return ResponseEntity.ok(cancelledOrder);
+    }
     // ========== SHIPMENTS ==========
 
     @Operation(summary = "Créer une expédition pour une commande")

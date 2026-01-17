@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class PurchaseOrderService {
@@ -37,6 +38,10 @@ public class PurchaseOrderService {
         this.productRepository = productRepository;
         this.purchaseOrderMapper = purchaseOrderMapper;
         this.inventoryService = inventoryService;
+    }
+
+    public List<PurchaseOrderDTO> getAllPurchaseOrders(){
+        return purchaseOrderRepository.findAll().stream().map(purchaseOrderMapper::toDto).toList();
     }
 
     public PurchaseOrderDTO createPurchaseOrder(PurchaseOrderCreateDTO createDTO){
