@@ -7,6 +7,7 @@ import com.spring.digital_logistics.dto.response.purchase.PurchaseOrderDTO;
 import com.spring.digital_logistics.entity.*;
 import com.spring.digital_logistics.entity.enums.PurchaseOrderStatus;
 import com.spring.digital_logistics.entity.enums.Role;
+import com.spring.digital_logistics.exception.BusinessException;
 import com.spring.digital_logistics.exception.PurchaseOrderStatusException;
 import com.spring.digital_logistics.exception.ResourceNotFoundException;
 import com.spring.digital_logistics.mapper.PurchaseOrderMapper;
@@ -137,4 +138,23 @@ public class PurchaseOrderService {
         PurchaseOrder savedOrder = purchaseOrderRepository.save(order);
         return purchaseOrderMapper.toDto(savedOrder);
     }
+
+    @Transactional
+    public PurchaseOrderDTO cancelPurchaseOrder(Long id) {
+        PurchaseOrder order = purchaseOrderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Order non trouvée avec l'ID : " + id));
+
+        if (order.getStatus() == PurchaseOrderStatus.RECEIVED
+                || order.getStatus() == PurchaseOrderStatus.COMPLETED
+                || order.getStatus() == PurchaseOrderStatus.PARTIALLY_RECEIVED
+                || order.getStatus() == PurchaseOrderStatus.CANCELLED) {
+            throw new BusinessException("Impossible d'annuler une commande déjà reçue ou partiellement reçue ou déjà annulé");
+        }
+
+        order.setStatus(PurchaseOrderStatus.CANCELLED);
+        purchaseOrderRepository.save(order);
+
+        return purchaseOrderMapper.toDto(order);
+    }
+
 }

@@ -249,6 +249,7 @@ public class AdminController {
         PurchaseOrderDTO cancelledOrder = purchaseOrderService.cancelPurchaseOrder(id);
         return ResponseEntity.ok(cancelledOrder);
     }
+
     // ========== SHIPMENTS ==========
 
     @Operation(summary = "Créer une expédition pour une commande")
