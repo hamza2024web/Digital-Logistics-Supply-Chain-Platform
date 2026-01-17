@@ -107,4 +107,10 @@ public class SalesOrderService {
     public List<SalesOrderDTO> getAllSalesOrders(){
         return salesOrderRepository.findAll().stream().map(salesOrderMapper::toDto).toList();
     }
+
+    public SalesOrderDTO getSalesOrderById(Long id){
+        SalesOrder order = salesOrderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("sales order non rouvé avec l'ID : " + id));
+        return salesOrderMapper.toDto(order);
+    }
 }
