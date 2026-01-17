@@ -44,6 +44,11 @@ public class PurchaseOrderService {
         return purchaseOrderRepository.findAll().stream().map(purchaseOrderMapper::toDto).toList();
     }
 
+    public PurchaseOrderDTO getPurchaseOrderById(Long id){
+        PurchaseOrder order = purchaseOrderRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Order non trouvé avec l'ID : " + id));
+        return purchaseOrderMapper.toDto(order);
+    }
+
     public PurchaseOrderDTO createPurchaseOrder(PurchaseOrderCreateDTO createDTO){
         Supplier supplier = supplierRepository.findById(createDTO.getSupplierId())
                 .orElseThrow(() -> new ResourceNotFoundException("Fournisseur non trouvé avec l'ID: " + createDTO.getSupplierId()));
