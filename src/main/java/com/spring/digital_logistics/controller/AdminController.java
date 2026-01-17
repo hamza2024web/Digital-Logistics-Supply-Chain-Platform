@@ -8,6 +8,7 @@ import com.spring.digital_logistics.dto.request.product.ProductCreateDTO;
 import com.spring.digital_logistics.dto.request.warehouse.WarehouseCreateDTO;
 import com.spring. digital_logistics.dto.response. product.ProductDTO;
 import com.spring.digital_logistics.dto.response.purchase.PurchaseOrderDTO;
+import com.spring.digital_logistics.dto.response.salesOrder.SalesOrderDTO;
 import com.spring.digital_logistics.dto.response.shipment.ShipmentDTO;
 import com.spring.digital_logistics.dto.response.supplier.SupplierDTO;
 import com.spring.digital_logistics.dto.response.user.UserDTO;
@@ -32,14 +33,16 @@ public class AdminController {
     private final SupplierService supplierService;
     private final PurchaseOrderService purchaseOrderService;
     private final ShipmentService shipmentService;
+    private final SalesOrderService salesOrderService;
 
-    public AdminController(UserService userService, WarehouseService warehouseService, ProductService productService, SupplierService supplierService, PurchaseOrderService purchaseOrderService, ShipmentService shipmentService){
+    public AdminController(UserService userService, WarehouseService warehouseService, ProductService productService, SupplierService supplierService, PurchaseOrderService purchaseOrderService, ShipmentService shipmentService, SalesOrderService salesOrderService){
         this.userService = userService;
         this.warehouseService = warehouseService;
         this.productService = productService;
         this.supplierService = supplierService;
         this.purchaseOrderService = purchaseOrderService;
         this.shipmentService = shipmentService;
+        this.salesOrderService = salesOrderService;
     }
 
     // ========== USERS ==========
@@ -274,5 +277,21 @@ public class AdminController {
     public ResponseEntity<ShipmentDTO> deliverOrder(@PathVariable Long orderId) {
         ShipmentDTO delivered = shipmentService.deliverOrder(orderId);
         return ResponseEntity.ok(delivered);
+    }
+
+    @Operation(summary = "Obtenir toutes les commandes clients")
+    @GetMapping("/sales-orders")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'WAREHOUSE_MANAGER')")
+    public ResponseEntity<List<SalesOrderDTO>> getAllSalesOrders() {
+        List<SalesOrderDTO> orders = salesOrderService.getAllSalesOrders();
+        return ResponseEntity.ok(orders);
+    }
+
+    @Operation(summary = "Obtenir une commande par ID")
+    @GetMapping("/sales-orders/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'WAREHOUSE_MANAGER')")
+    public ResponseEntity<SalesOrderDTO> getSalesOrderById(@PathVariable Long id) {
+        SalesOrderDTO order = salesOrderService.getSalesOrderById(id);
+        return ResponseEntity.ok(order);
     }
 }
