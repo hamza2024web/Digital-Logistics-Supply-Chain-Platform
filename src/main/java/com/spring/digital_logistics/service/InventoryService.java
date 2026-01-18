@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class InventoryService {
@@ -36,6 +37,15 @@ public class InventoryService {
         this.inventoryMapper = inventoryMapper;
     }
 
+    public List<InventoryDTO> getAllInventories(){
+        return inventoryRepository.findAll().stream().map(inventoryMapper::toDto).toList();
+    }
+
+    public List<InventoryDTO> getInventoriesByWarehouse(Long id){
+        List<Inventory> inventory = inventoryRepository.findByWarehouseId(id)
+                .orElseThrow(() -> new ResourceNotFoundException("inventory non trouvé avec l'ID de warehouse suivant : " + id));
+        return inventory.stream().map(inventoryMapper::toDto).toList();
+    }
     @Transactional
     public InventoryDTO recordInboundMovement(MovementRequestDTO movementRequest){
         Product product = productRepository.findById(movementRequest.getProductId()).orElseThrow(() -> new ResourceNotFoundException("Produit non trouvé avec L'ID : " + movementRequest.getProductId()));

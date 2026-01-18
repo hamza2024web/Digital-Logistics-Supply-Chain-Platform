@@ -5,8 +5,10 @@ import com.spring.digital_logistics.entity.Product;
 import com.spring.digital_logistics.entity.Warehouse;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface InventoryRepository extends JpaRepository<Inventory, Long> {
     Optional<Inventory> findByProductAndWarehouse(Product product, Warehouse warehouse);
+    Optional<List<Inventory>> findByWarehouseId(Long warehouseId);
 }
