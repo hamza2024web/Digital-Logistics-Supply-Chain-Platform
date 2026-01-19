@@ -30,8 +30,8 @@ public class WarehouseManagerController {
 
     @PostMapping("/inventory/{purchase_id}/inbound")
     @PreAuthorize("hasAuthority('WAREHOUSE_MANAGER')")
-    public ResponseEntity<PurchaseOrderDTO> recordInbound(@Valid @PathVariable Long purchase_id, @AuthenticationPrincipal User warehouse){
-        PurchaseOrderDTO updatedInventory = purchaseOrderService.receiveOrder(purchase_id,warehouse);
+    public ResponseEntity<PurchaseOrderDTO> recordInbound(@Valid @PathVariable Long purchase_id){
+        PurchaseOrderDTO updatedInventory = purchaseOrderService.receiveOrder(purchase_id);
         return ResponseEntity.ok(updatedInventory);
     }
 

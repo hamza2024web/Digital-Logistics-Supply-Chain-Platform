@@ -91,7 +91,7 @@ public class AdminController {
 
     @Operation(summary = "Obtenir tous les produits")
     @GetMapping("/products")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN','WAREHOUSE_MANAGER')")
     public ResponseEntity<List<ProductDTO>> getAllProducts(){
         List<ProductDTO> products = productService. getAllProducts();
         return ResponseEntity.ok(products);
@@ -141,7 +141,7 @@ public class AdminController {
 
     @Operation(summary = "Obtenir tous les entrepôts")
     @GetMapping("/warehouses")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN','WAREHOUSE_MANAGER')")
     public ResponseEntity<List<WarehouseDTO>> getAllWarehouses(){
         List<WarehouseDTO> warehouses = warehouseService.getAllWarehouses();
         return ResponseEntity. ok(warehouses);
@@ -215,7 +215,7 @@ public class AdminController {
     // ========== PURCHASE ORDERS ==========
     @Operation(summary = "Obtenir tous les bons de commande")
     @GetMapping("/purchase-orders")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN','WAREHOUSE_MANAGER')")
     public ResponseEntity<List<PurchaseOrderDTO>> getAllPurchaseOrders(){
         List<PurchaseOrderDTO> orders = purchaseOrderService.getAllPurchaseOrders();
         return ResponseEntity.ok(orders);

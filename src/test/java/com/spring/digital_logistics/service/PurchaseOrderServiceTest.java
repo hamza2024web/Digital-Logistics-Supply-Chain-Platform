@@ -151,7 +151,7 @@ class PurchaseOrderServiceTest {
         when(purchaseOrderRepository.findById(1L)).thenReturn(Optional.of(purchaseOrder));
         when(purchaseOrderRepository.save(any(PurchaseOrder.class))).thenReturn(purchaseOrder);
         when(purchaseOrderMapper.toDto(any(PurchaseOrder.class))).thenReturn(new PurchaseOrderDTO());
-        purchaseOrderService.receiveOrder(1L, warehouseManager);
+        purchaseOrderService.receiveOrder(1L);
 
         // Act
         // Assert
@@ -170,7 +170,7 @@ class PurchaseOrderServiceTest {
         // Act & Assert
         // On teste la première garde de sécurité de la méthode
         assertThrows(SecurityException.class, () -> {
-            purchaseOrderService.receiveOrder(1L, clientUser);
+            purchaseOrderService.receiveOrder(1L);
         });
         // On vérifie que rien d'autre ne s'est passé
         verify(purchaseOrderRepository, never()).findById(any());
@@ -185,7 +185,7 @@ class PurchaseOrderServiceTest {
 
         // Act & Assert
         assertThrows(PurchaseOrderStatusException.class, () -> {
-            purchaseOrderService.receiveOrder(1L, warehouseManager);
+            purchaseOrderService.receiveOrder(1L);
         });
     }
 
@@ -196,7 +196,7 @@ class PurchaseOrderServiceTest {
 
         // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> {
-            purchaseOrderService.receiveOrder(999L, warehouseManager);
+            purchaseOrderService.receiveOrder(999L);
         });
     }
 }

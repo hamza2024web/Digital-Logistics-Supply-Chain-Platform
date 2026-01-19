@@ -96,11 +96,7 @@ public class PurchaseOrderService {
     }
 
     @Transactional
-    public PurchaseOrderDTO receiveOrder(Long purchaseOrderId , User warehouseUser){
-
-        if (warehouseUser.getRole() != Role.WAREHOUSE_MANAGER){
-            throw new SecurityException("Vous n'étes pas autorisé de faire cette action");
-        }
+    public PurchaseOrderDTO receiveOrder(Long purchaseOrderId){
 
         PurchaseOrder order = purchaseOrderRepository.findById(purchaseOrderId).orElseThrow(() -> new ResourceNotFoundException("Purchase Order non trouvé avec L'ID : " + purchaseOrderId));
 

@@ -170,6 +170,7 @@ public class InventoryService {
                 inventory.setQtyReserved(inventory.getQtyReserved() + quantityToReserve);
                 inventoryRepository.save(inventory);
 
+
                 line.setStatus(SalesOrderLineStatus.RESERVED);
 
             } else {
