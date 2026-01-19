@@ -2,8 +2,8 @@ package com.spring.digital_logistics.controller;
 
 import com.spring.digital_logistics.dto.request.salesOrder.SalesOrderCreateDTO;
 import com.spring.digital_logistics.dto.response.salesOrder.SalesOrderDTO;
-import com.spring.digital_logistics.entity.SalesOrder;
 import com.spring.digital_logistics.entity.User;
+import com.spring.digital_logistics.security.service.UserDetailsImpl;
 import com.spring.digital_logistics.service.SalesOrderService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -26,28 +26,32 @@ public class ClientController {
 
     @PostMapping("/orders")
     @PreAuthorize("hasAuthority('CLIENT')")
-    public ResponseEntity<SalesOrderDTO> createSalesOrder(@Valid @RequestBody SalesOrderCreateDTO createDTO , @AuthenticationPrincipal User currentUser){
-        SalesOrderDTO newOrder = salesOrderService.createOrder(createDTO , currentUser);
+    public ResponseEntity<SalesOrderDTO> createSalesOrder(@Valid @RequestBody SalesOrderCreateDTO createDTO , @AuthenticationPrincipal UserDetailsImpl userDetails){
+        User client = userDetails.getUser();
+        SalesOrderDTO newOrder = salesOrderService.createOrder(createDTO , client);
         return new ResponseEntity<>(newOrder , HttpStatus.CREATED);
     }
 
     @PatchMapping("/orders/{orderId}/reserve")
     @PreAuthorize("hasAuthority('CLIENT')")
-    public ResponseEntity<SalesOrderDTO> reserveOrderStock(@PathVariable Long orderId, @AuthenticationPrincipal User currentUser) {
-        SalesOrderDTO reservedOrder = salesOrderService.reserveOrderStock(orderId, currentUser);
+    public ResponseEntity<SalesOrderDTO> reserveOrderStock(@PathVariable Long orderId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        User client = userDetails.getUser();
+        SalesOrderDTO reservedOrder = salesOrderService.reserveOrderStock(orderId, client);
         return ResponseEntity.ok(reservedOrder);
     }
 
     @GetMapping("/orders")
     @PreAuthorize("hasAuthority('CLIENT')")
-    public ResponseEntity<List<SalesOrderDTO>> getOrders(@AuthenticationPrincipal User client){
+    public ResponseEntity<List<SalesOrderDTO>> getOrders(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        User client = userDetails.getUser();
         List<SalesOrderDTO> orders = salesOrderService.getMyOrder(client);
         return ResponseEntity.ok(orders);
     }
 
     @GetMapping("/orders/{orderId}")
     @PreAuthorize("hasAuthority('CLIENT')")
-    public ResponseEntity<SalesOrderDTO> getOrderById(@PathVariable Long orderId , @AuthenticationPrincipal User client){
+    public ResponseEntity<SalesOrderDTO> getOrderById(@PathVariable Long orderId , @AuthenticationPrincipal UserDetailsImpl userDetails){
+        User client = userDetails.getUser();
         SalesOrderDTO order = salesOrderService.getOrder(orderId,client);
         return ResponseEntity.ok(order);
     }

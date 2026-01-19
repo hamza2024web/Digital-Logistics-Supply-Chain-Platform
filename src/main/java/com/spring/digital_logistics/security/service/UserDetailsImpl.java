@@ -17,7 +17,6 @@ public class UserDetailsImpl implements UserDetails {
     private static final long serialVersionUID = 1L;
 
     private Long id;
-    private String username;
     private String email;
 
     @JsonIgnore
@@ -25,42 +24,28 @@ public class UserDetailsImpl implements UserDetails {
 
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(Long id, String username, String email, String password,
-                           Collection<? extends GrantedAuthority> authorities) {
-        this.id = id;
-        this.username = username;
-        this.email = email;
-        this.password = password;
+    @JsonIgnore
+    private final User user;
+
+    private UserDetailsImpl(User user,
+                            Collection<? extends GrantedAuthority> authorities) {
+        this.id = user.getId();
+        this.email = user.getEmail();
+        this.password = user.getPassword();
         this.authorities = authorities;
+        this.user = user;
     }
 
-    // Cette méthode convertit votre Entité User -> UserDetailsImpl
     public static UserDetailsImpl build(User user) {
-        List<GrantedAuthority> authorities = Collections.singletonList(
+        List<GrantedAuthority> authorities = List.of(
                 new SimpleGrantedAuthority(user.getRole().name())
         );
-
-        return new UserDetailsImpl(
-                user.getId(),
-                user.getEmail(),
-                user.getEmail(),
-                user.getPassword(),
-                authorities);
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
+        return new UserDetailsImpl(user, authorities);
     }
 
     @Override
     public String getUsername() {
-        return username; // ou email
+        return email;
     }
 
     @Override
@@ -85,11 +70,14 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        UserDetailsImpl user = (UserDetailsImpl) o;
-        return Objects.equals(id, user.id);
+        if (this == o) return true;
+        if (!(o instanceof UserDetailsImpl)) return false;
+        UserDetailsImpl that = (UserDetailsImpl) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
