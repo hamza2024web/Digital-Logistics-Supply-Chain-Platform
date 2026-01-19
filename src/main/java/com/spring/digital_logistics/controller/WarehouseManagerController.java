@@ -3,15 +3,14 @@ package com.spring.digital_logistics.controller;
 import com.spring.digital_logistics.dto.request.adjustement.AdjustmentRequestDTO;
 import com.spring.digital_logistics.dto.request.inventory.MovementRequestDTO;
 import com.spring.digital_logistics.dto.response.inventory.InventoryDTO;
+import com.spring.digital_logistics.dto.response.inventory.InventoryMovementDTO;
 import com.spring.digital_logistics.dto.response.purchase.PurchaseOrderDTO;
-import com.spring.digital_logistics.entity.User;
 import com.spring.digital_logistics.service.InventoryService;
 import com.spring.digital_logistics.service.PurchaseOrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -63,5 +62,12 @@ public class WarehouseManagerController {
     public ResponseEntity<List<InventoryDTO>> getInventoriesByWarehouse(@PathVariable Long warehouseId) {
         List<InventoryDTO> inventories = inventoryService.getInventoriesByWarehouse(warehouseId);
         return ResponseEntity. ok(inventories);
+    }
+
+    @Operation(summary = "Inventory mouvement")
+    @GetMapping("/inventories/audit")
+    public ResponseEntity<List<InventoryMovementDTO>> getInventoryMouvements(){
+        List<InventoryMovementDTO> mouvements = inventoryService.getInventoryMouvements();
+        return ResponseEntity.ok(mouvements);
     }
 }

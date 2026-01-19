@@ -3,12 +3,14 @@ package com.spring.digital_logistics.service;
 import com.spring.digital_logistics.dto.request.adjustement.AdjustmentRequestDTO;
 import com.spring.digital_logistics.dto.request.inventory.MovementRequestDTO;
 import com.spring.digital_logistics.dto.response.inventory.InventoryDTO;
+import com.spring.digital_logistics.dto.response.inventory.InventoryMovementDTO;
 import com.spring.digital_logistics.entity.*;
 import com.spring.digital_logistics.entity.enums.MovementType;
 import com.spring.digital_logistics.entity.enums.SalesOrderLineStatus;
 import com.spring.digital_logistics.exception.ResourceNotFoundException;
 import com.spring.digital_logistics.exception.StockUnavailableException;
 import com.spring.digital_logistics.mapper.InventoryMapper;
+import com.spring.digital_logistics.mapper.InventoryMovementMapper;
 import com.spring.digital_logistics.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,15 +28,17 @@ public class InventoryService {
     private final InventoryRepository inventoryRepository;
     private final InventoryMovementRepository inventoryMovementRepository;
     private final InventoryMapper inventoryMapper;
+    private final InventoryMovementMapper inventoryMovementMapper;
     private static final Logger log = LoggerFactory.getLogger(InventoryService.class);
 
 
-    public InventoryService(ProductRepository productRepository, WarehouseRepository warehouseRepository, InventoryRepository inventoryRepository, InventoryMovementRepository inventoryMovementRepository, InventoryMapper inventoryMapper) {
+    public InventoryService(ProductRepository productRepository, WarehouseRepository warehouseRepository, InventoryRepository inventoryRepository, InventoryMovementRepository inventoryMovementRepository, InventoryMapper inventoryMapper, InventoryMovementMapper inventoryMovementMapper) {
         this.productRepository = productRepository;
         this.warehouseRepository = warehouseRepository;
         this.inventoryRepository = inventoryRepository;
         this.inventoryMovementRepository = inventoryMovementRepository;
         this.inventoryMapper = inventoryMapper;
+        this.inventoryMovementMapper = inventoryMovementMapper;
     }
 
     public List<InventoryDTO> getAllInventories(){
@@ -244,4 +248,12 @@ public class InventoryService {
         Inventory savedQuantity = inventoryRepository.save(inventorydestination);
 
     }
+
+    public List<InventoryMovementDTO> getInventoryMouvements() {
+        return inventoryMovementRepository.findAll()
+                .stream()
+                .map(inventoryMovementMapper::toDto)
+                .toList();
+    }
+
 }
